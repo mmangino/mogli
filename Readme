@@ -37,6 +37,15 @@ myself.posts
 
 Unfortunately, quite a bit of information is unavailable due to a facebook bug. If you want to see this fixed, please vote for: http://bugs.developers.facebook.com/show_bug.cgi?id=9864
 
+You can also fetch other objects by ID, for example:
+
+album = Ogli::Album.find(99394368305)
+album.photos
+
+If the object requires a client, just pass one in:
+
+album = Ogli::Album.find(99394368305,client)
+album.photos
 
 ========================================
 Contributing

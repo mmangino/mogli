@@ -1,6 +1,6 @@
 
 
-2) Handle paging in associations (i.e. add a more? and fetch_previous and fetch_next methods)
+2) Handle paging in associations (i.e. add  fetch_previous and fetch_next methods along with previous_url and next_url)
 
 3) Add missing models:
   * Event
