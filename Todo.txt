@@ -1,0 +1,17 @@
+0) exchange access_token for access token
+
+1) get user data
+  * basic info
+  * work info
+  * education
+  * interested in
+  * meeting for
+2) annotate connections
+  * friends
+  * activities
+  * interests
+  * music
+  * books
+  * television
+  
+3) add things that require permission with exception if not granted
