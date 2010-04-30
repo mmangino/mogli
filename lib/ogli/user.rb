@@ -3,13 +3,18 @@ module Ogli
   class User < Hashie::Mash
     include Model
     
-    has_association :activities,Ogli::Activity
-    has_association :friends, Ogli::User
-    has_association :interests, Ogli::Interest
-    has_association :music, Ogli::Music
-    has_association :books, Ogli::Book
-    has_association :movies, Ogli::Movie
-    has_association :television, Ogli::Television
-    has_association :posts, Ogli::Post
+    def self.recognize?(hash)
+      !hash.has_key?("category")
+    end
+    
+    has_association :activities,"Activity"
+    has_association :albums,"Album"
+    has_association :friends, "User"
+    has_association :interests, "Interest"
+    has_association :music, "Music"
+    has_association :books, "Book"
+    has_association :movies, "Movie"
+    has_association :television, "Television"
+    has_association :posts, "Post"
   end
 end

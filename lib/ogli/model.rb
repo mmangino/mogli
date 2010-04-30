@@ -27,12 +27,12 @@ module Ogli
         end
       end
       
-      def hash_populating_accessor(name,klass)
-        define_method "#{name}=" do |hash|
-          instance_variable_set("@#{name}",client.map_data(hash,klass))
+      def hash_populating_accessor(method_name,*klass)
+        define_method "#{method_name}=" do |hash|
+          instance_variable_set("@#{method_name}",client.map_data(hash,klass))
         end
-        define_method "#{name}" do
-          instance_variable_get "@#{name}"
+        define_method "#{method_name}" do
+          instance_variable_get "@#{method_name}"
         end
       end
       
@@ -44,6 +44,14 @@ module Ogli
           end
           return ret
         end
+      end
+      
+      def recognize?(data)
+        true
+      end
+      
+      def find(id,client=nil)
+        (client||Ogli::Client.new).get_and_map(id,self)
       end
     end
   end

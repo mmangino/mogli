@@ -18,14 +18,21 @@ describe Ogli::User do
   end
   
   it "have an activities attribute which fetches when called" do
-    mock_client.should_receive(:get_and_map).with("/1/activities",Ogli::Activity).and_return("activities")
+    mock_client.should_receive(:get_and_map).with("/1/activities","Activity").and_return("activities")
     user_1.activities.should == "activities"
   end
   
   it "only fetch activities once" do
-    mock_client.should_receive(:get_and_map).once.with("/1/activities",Ogli::Activity).and_return([])
+    mock_client.should_receive(:get_and_map).once.with("/1/activities","Activity").and_return([])
     user_1.activities
     user_1.activities
   end
   
+  it "won't recognize pages" do
+    Ogli::User.recognize?("id"=>1,"name"=>"bob","category"=>"fdhsjkfsd")
+  end
+  
+  it "will recognize itself" do
+    Ogli::User.recognize?("id"=>1,"name"=>"bob")    
+  end
 end

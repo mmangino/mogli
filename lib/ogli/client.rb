@@ -7,7 +7,7 @@ module Ogli
     
     include HTTParty
     include Ogli::Client::User   
-    
+    class UnrecognizeableClassError < Exception; end
     
     def api_path(path)
       "http://graph.facebook.com/#{path}"
@@ -19,7 +19,8 @@ module Ogli
     end
     
     def get_and_map(path,klass=nil)
-      map_data(self.class.get(api_path(path),:query=>default_params),klass)
+      data = self.class.get(api_path(path),:query=>default_params)
+      map_data(data,klass)
     end
     
     def map_data(data,klass=nil)
@@ -30,7 +31,7 @@ module Ogli
     end
     
     
-    protected
+    #protected
     
     def extract_hash_or_array(hash_or_array)
       return hash_or_array if hash_or_array.nil? or hash_or_array.kind_of?(Array)
@@ -47,8 +48,20 @@ module Ogli
     end
     
     def create_instance(klass,data)
-      klass = Ogli.const_get(klass) if klass.is_a?(String)
+      klass = determine_class(klass,data)
+      if klass.nil?
+        raise UnrecognizeableClassError.new("unable to recognize klass for #{klass.inspect} => #{data.inspect}")
+      end
       klass.new(data,self)
+    end
+    
+    def constantize_string(klass)
+      klass.is_a?(String) ? Ogli.const_get(klass) : klass
+    end
+    
+    def determine_class(klass_or_klasses,data)
+      klasses = Array(klass_or_klasses).map { |k| constantize_string(k)}
+      klasses.detect {|klass| klass.recognize?(data)}
     end
     
     def raise_error_if_necessary(data)

@@ -86,6 +86,18 @@ describe Ogli::Client do
         e.message.should == "OAuthAccessTokenException: An access token is required to request this resource."
       end
     end
+    
+    describe "Instance creation" do
+      it "will find the class in the Ogli namespace if given a string" do
+        client.create_instance("User",{:id=>1}).should be_an_instance_of(Ogli::User)
+      end
+      
+      it "call the recognize method on each class passing the data and will use the one that recognizes it" do
+        Ogli::User.should_receive(:recognize?).with(:id=>1).and_return(false)
+        Ogli::Post.should_receive(:recognize?).with(:id=>1).and_return(true)
+        client.create_instance(["User","Post"],{:id=>1}).should be_an_instance_of(Ogli::Post)
+      end
+    end
   end
   
 end

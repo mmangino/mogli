@@ -1,7 +1,14 @@
 
-1) make klass arg be a proc that can determine type of object (for page/user on posts)
-2) Handle paging in associations
-3)
+
+2) Handle paging in associations (i.e. add a more? and fetch_previous and fetch_next methods)
+
+3) Add missing models:
+  * Event
+  * Page
+  * Group
+  * Application
+  * Video
+  * Note
   
 
 
