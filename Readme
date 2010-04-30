@@ -1,0 +1,53 @@
+The first version of a Facebook Open Graph Library for Ruby. Require HTTParty to function.
+
+For documentation on the Open Graph Library, see: http://developers.facebook.com/docs/api
+
+======================================
+Quick Start:
+======================================
+
+* create a token by following the instructions at http://developers.facebook.com/docs/authentication/desktop
+
+The important part is to make a request to https://graph.facebook.com/oauth/authorize?client_id=...&redirect_uri=http://www.facebook.com/connect/login_success.html&type=user_agent&display=popup
+
+(they have typos in the tutorial)
+
+grab the result and copy the access_token parameter. This will need to be URL decoded.
+
+With the decoded access_token, create a new Ogli client:
+
+in the ogli directory, run
+irb -Ilib
+
+require "rubygems"
+require "init"
+client = Ogli::Client.new("your_access_token")
+
+You can now fetch users with the client, for example:
+
+myself  = client.user("me")
+
+or
+
+mikemangino = client.user("12451752")
+
+When you fetch yourself, you can look at your posts and other information:
+
+myself.posts
+
+Unfortunately, quite a bit of information is unavailable due to a facebook bug. If you want to see this fixed, please vote for: http://bugs.developers.facebook.com/show_bug.cgi?id=9864
+
+
+========================================
+Contributing
+========================================
+
+1) fork the repo
+2) Add tests for a missing method, such as client.post(post_id)
+3) implement missing method
+4) send me a pull request.
+
+Feel free to add missing associations if you see them as well. My goal is to get a readonly API in place first, and then move on to the read/write API
+
+Mike
+
