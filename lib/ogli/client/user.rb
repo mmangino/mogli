@@ -4,7 +4,7 @@ module Ogli
 
       
       def user(id)
-        self.class.get(api_path(id))
+        get_and_map(id,Ogli::User)
       end
     end
   end
