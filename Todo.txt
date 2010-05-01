@@ -1,18 +1,11 @@
 
+1) allow embedding into other classes, example:
 
-3) Add missing models:
-  * Event
-  * Page
-  * Group
-  * Application
-  * Video
-  * Note
-  
-
-
-allow embedding into other classes
 class User < ActiveRecord::Base
   acts_as_ogli :id=>:facebook_id,:class=>Ogli::User
 end
 
 allows user.facebook.activities
+or user.facebook_unpopulated.activities
+
+2) Start working on update handling
