@@ -43,7 +43,7 @@ describe Ogli::Client do
     end
     
     it "returns the array if no class is specified and there is only a data parameter" do
-      client.map_data({"data"=>[user_data,user_data]}).should be_an_instance_of(Array)
+      client.map_data({"data"=>[user_data,user_data]}).should be_kind_of(Array)
     end
     
         
@@ -62,9 +62,34 @@ describe Ogli::Client do
     
     it "creates an array of instances when the data is just a hash with a single data parameter" do
       users = client.map_data({"data"=>[user_data,user_data]},Ogli::User)
-      users.should be_an_instance_of(Array)
+      users.should be_kind_of(Array)
       users.each {|i| i.should be_an_instance_of(Ogli::User) }
       users.size.should == 2
+    end
+    
+    it "create an instance of fetching array when there is a data element" do
+      users = client.map_data({"data"=>[user_data,user_data]},Ogli::User)
+      users.should be_an_instance_of(Ogli::FetchingArray)      
+    end
+    
+    it "sets the client on the array" do
+      users = client.map_data({"data"=>[user_data,user_data]},Ogli::User)
+      users.client.should == client      
+    end
+    
+    it "sets the next url on the array" do
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"next"=>"next"}},Ogli::User)
+      users.next_url.should == "next"
+    end
+
+    it "sets the previous url on the array" do
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"previous"=>"prev"}},Ogli::User)
+      users.previous_url.should == "prev"
+    end
+    
+    it "sets the classes on the array" do
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"previous"=>"prev"}},Ogli::User)
+      users.classes.should == [Ogli::User]      
     end
     
     it "sets the client in the newly created instance" do

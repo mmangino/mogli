@@ -1,4 +1,5 @@
 require "ogli/client/user"
+require "ruby-debug"
 
 module Ogli
   class Client
@@ -23,9 +24,14 @@ module Ogli
       map_data(data,klass)
     end
     
+    def get_and_map_url(url,klass=nil)
+      data = self.class.get(url)
+      map_data(data,klass)
+    end
+    
     def map_data(data,klass=nil)
       raise_error_if_necessary(data)
-      hash_or_array = extract_hash_or_array(data)
+      hash_or_array = extract_hash_or_array(data,klass)
       hash_or_array = map_to_class(hash_or_array,klass) if klass
       hash_or_array
     end
@@ -33,15 +39,27 @@ module Ogli
     
     #protected
     
-    def extract_hash_or_array(hash_or_array)
+    def extract_hash_or_array(hash_or_array,klass)
       return hash_or_array if hash_or_array.nil? or hash_or_array.kind_of?(Array)
-      return hash_or_array["data"] if hash_or_array.has_key?("data")
+      return extract_fetching_array(hash_or_array,klass) if hash_or_array.has_key?("data")
       return hash_or_array
+    end
+    
+    def extract_fetching_array(hash,klass)
+      f = Ogli::FetchingArray.new
+      f.concat(hash["data"])
+      f.client = self
+      f.classes = Array(klass)
+      if hash["paging"]
+        f.next_url = hash["paging"]["next"]
+        f.previous_url = hash["paging"]["previous"]
+      end
+      f
     end
     
     def map_to_class(hash_or_array,klass)
       if hash_or_array.kind_of?(Array)
-        hash_or_array = hash_or_array.map {|i| create_instance(klass,i)}
+        hash_or_array.map! {|i| create_instance(klass,i)}
       else
         hash_or_array = create_instance(klass,hash_or_array)
       end

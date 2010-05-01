@@ -3,6 +3,7 @@ module Ogli
 end
 
 require "ogli/model"
+require "ogli/fetching_array"
 require "ogli/action"
 require "ogli/activity"
 require "ogli/album"
