@@ -1,19 +1,19 @@
 require "spec_helper"
-describe Ogli::FetchingArray do
+describe Mogli::FetchingArray do
   
   let :fetching_array do
-    array = Ogli::FetchingArray.new
-    array << Ogli::User.new(:id=>4)
-    array << Ogli::User.new(:id=>5)
+    array = Mogli::FetchingArray.new
+    array << Mogli::User.new(:id=>4)
+    array << Mogli::User.new(:id=>5)
     array.next_url = "http://next"
     array.previous_url = "http://previous"
     array.client = client
-    array.classes = [Ogli::User]
+    array.classes = [Mogli::User]
     array
   end
   
   let :client do
-    Ogli::Client.new
+    Mogli::Client.new
   end
   
   it "has a next_url" do
@@ -36,18 +36,18 @@ describe Ogli::FetchingArray do
 
   describe "fetching" do
     before(:each) do
-      Ogli::Client.stub!(:get).and_return("data"=>[:id=>3],"paging"=>{"previous"=>"http://new_previous","next"=>"http://new_next"})
+      Mogli::Client.stub!(:get).and_return("data"=>[:id=>3],"paging"=>{"previous"=>"http://new_previous","next"=>"http://new_next"})
     end
     
     describe "fetch next" do
 
       it "returns an empty array if there is no next_url" do
-        Ogli::FetchingArray.new.fetch_next.should == []
+        Mogli::FetchingArray.new.fetch_next.should == []
       end
 
       it "adds the contents to this container" do
         fetching_array.fetch_next
-        fetching_array.should == [Ogli::User.new(:id=>4),Ogli::User.new(:id=>5),Ogli::User.new(:id=>3)]
+        fetching_array.should == [Mogli::User.new(:id=>4),Mogli::User.new(:id=>5),Mogli::User.new(:id=>3)]
       end
     
       it "updates the next url with the newly fetched next url" do
@@ -62,7 +62,7 @@ describe Ogli::FetchingArray do
       end
     
       it "returns the new records" do
-        fetching_array.fetch_next.should == [Ogli::User.new(:id=>3)]
+        fetching_array.fetch_next.should == [Mogli::User.new(:id=>3)]
       end
     
     end
@@ -70,13 +70,13 @@ describe Ogli::FetchingArray do
     describe "fetch previous" do
     
       it "returns an empty array if there is no previous url" do
-        Ogli::FetchingArray.new.fetch_previous.should == []
+        Mogli::FetchingArray.new.fetch_previous.should == []
       
       end
     
       it "adds the contents to this container" do
         fetching_array.fetch_previous
-        fetching_array.should == [Ogli::User.new(:id=>3),Ogli::User.new(:id=>4),Ogli::User.new(:id=>5)]
+        fetching_array.should == [Mogli::User.new(:id=>3),Mogli::User.new(:id=>4),Mogli::User.new(:id=>5)]
       end
     
       it "updates the previous url with the newly fetched previous url" do
@@ -90,7 +90,7 @@ describe Ogli::FetchingArray do
       end
     
       it "returns the new records" do
-        fetching_array.fetch_previous.should == [Ogli::User.new(:id=>3)]      
+        fetching_array.fetch_previous.should == [Mogli::User.new(:id=>3)]      
       end
     
     end

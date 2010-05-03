@@ -14,14 +14,14 @@ The important part is to make a request to https://graph.facebook.com/oauth/auth
 
 grab the result and copy the access_token parameter. This will need to be URL decoded.
 
-With the decoded access_token, create a new Ogli client:
+With the decoded access_token, create a new Mogli client:
 
-in the ogli directory, run
+in the mogli directory, run
 irb -Ilib
 
 require "rubygems"
 require "init"
-client = Ogli::Client.new("your_access_token")
+client = Mogli::Client.new("your_access_token")
 
 You can now fetch users with the client, for example:
 
@@ -39,12 +39,12 @@ Unfortunately, quite a bit of information is unavailable due to a facebook bug. 
 
 You can also fetch other objects by ID, for example:
 
-album = Ogli::Album.find(99394368305)
+album = Mogli::Album.find(99394368305)
 album.photos
 
 If the object requires a client, just pass one in:
 
-album = Ogli::Album.find(99394368305,client)
+album = Mogli::Album.find(99394368305,client)
 album.photos
 
 ========================================

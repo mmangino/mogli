@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Television < Hashie::Mash
     include Model
     

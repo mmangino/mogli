@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class FetchingArray < Array
     attr_accessor :next_url, :previous_url, :client, :classes
     

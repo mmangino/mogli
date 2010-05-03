@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Event < Hashie::Dash
     include Model
     define_properties :id, :name, :description, :start_time, :end_time, :location, :privacy, :updated_time

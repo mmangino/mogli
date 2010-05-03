@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Music < Hashie::Mash
     include Model
     

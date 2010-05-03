@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Note < Hashie::Dash
     include Model
     

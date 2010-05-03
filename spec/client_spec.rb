@@ -1,29 +1,29 @@
 require "spec_helper"
-describe Ogli::Client do
+describe Mogli::Client do
   
   let :client do
-    Ogli::Client.new
+    Mogli::Client.new
   end
   
   
   describe "creation" do    
     it "allows creating with an access_token" do
-      client = Ogli::Client.new("myaccesstoken")
+      client = Mogli::Client.new("myaccesstoken")
       client.access_token.should == "myaccesstoken"
     end
   
     it "sets the access_token into the default params" do
-      client = Ogli::Client.new("myaccesstoken")
+      client = Mogli::Client.new("myaccesstoken")
       client.default_params.should == {:access_token=>"myaccesstoken"}
     end
 
     it "allow creation with no access token" do
-      client = Ogli::Client.new
+      client = Mogli::Client.new
       client.access_token.should be_nil
     end
   
     it "doesn't include the access_token param when not passed" do
-      client = Ogli::Client.new
+      client = Mogli::Client.new
       client.default_params.should == {}
     end
   end
@@ -48,52 +48,52 @@ describe Ogli::Client do
     
         
     it "creates an instance of the class when specified" do
-      user = client.map_data(user_data,Ogli::User)
-      user.should be_an_instance_of(Ogli::User)
+      user = client.map_data(user_data,Mogli::User)
+      user.should be_an_instance_of(Mogli::User)
       user.id.should == 12451752
     end
     
     it "creates an array of instances when the data is an array" do
-      users = client.map_data([user_data,user_data],Ogli::User)
+      users = client.map_data([user_data,user_data],Mogli::User)
       users.should be_an_instance_of(Array)
-      users.each {|i| i.should be_an_instance_of(Ogli::User) }
+      users.each {|i| i.should be_an_instance_of(Mogli::User) }
       users.size.should == 2
     end
     
     it "creates an array of instances when the data is just a hash with a single data parameter" do
-      users = client.map_data({"data"=>[user_data,user_data]},Ogli::User)
+      users = client.map_data({"data"=>[user_data,user_data]},Mogli::User)
       users.should be_kind_of(Array)
-      users.each {|i| i.should be_an_instance_of(Ogli::User) }
+      users.each {|i| i.should be_an_instance_of(Mogli::User) }
       users.size.should == 2
     end
     
     it "create an instance of fetching array when there is a data element" do
-      users = client.map_data({"data"=>[user_data,user_data]},Ogli::User)
-      users.should be_an_instance_of(Ogli::FetchingArray)      
+      users = client.map_data({"data"=>[user_data,user_data]},Mogli::User)
+      users.should be_an_instance_of(Mogli::FetchingArray)      
     end
     
     it "sets the client on the array" do
-      users = client.map_data({"data"=>[user_data,user_data]},Ogli::User)
+      users = client.map_data({"data"=>[user_data,user_data]},Mogli::User)
       users.client.should == client      
     end
     
     it "sets the next url on the array" do
-      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"next"=>"next"}},Ogli::User)
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"next"=>"next"}},Mogli::User)
       users.next_url.should == "next"
     end
 
     it "sets the previous url on the array" do
-      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"previous"=>"prev"}},Ogli::User)
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"previous"=>"prev"}},Mogli::User)
       users.previous_url.should == "prev"
     end
     
     it "sets the classes on the array" do
-      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"previous"=>"prev"}},Ogli::User)
-      users.classes.should == [Ogli::User]      
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{"previous"=>"prev"}},Mogli::User)
+      users.classes.should == [Mogli::User]      
     end
     
     it "sets the client in the newly created instance" do
-      user = client.map_data(user_data,Ogli::User)
+      user = client.map_data(user_data,Mogli::User)
       user.client.should == client
     end
     
@@ -113,14 +113,14 @@ describe Ogli::Client do
     end
     
     describe "Instance creation" do
-      it "will find the class in the Ogli namespace if given a string" do
-        client.create_instance("User",{:id=>1}).should be_an_instance_of(Ogli::User)
+      it "will find the class in the Mogli namespace if given a string" do
+        client.create_instance("User",{:id=>1}).should be_an_instance_of(Mogli::User)
       end
       
       it "call the recognize method on each class passing the data and will use the one that recognizes it" do
-        Ogli::User.should_receive(:recognize?).with(:id=>1).and_return(false)
-        Ogli::Post.should_receive(:recognize?).with(:id=>1).and_return(true)
-        client.create_instance(["User","Post"],{:id=>1}).should be_an_instance_of(Ogli::Post)
+        Mogli::User.should_receive(:recognize?).with(:id=>1).and_return(false)
+        Mogli::Post.should_receive(:recognize?).with(:id=>1).and_return(true)
+        client.create_instance(["User","Post"],{:id=>1}).should be_an_instance_of(Mogli::Post)
       end
     end
   end

@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Book < Hashie::Mash
     include Model
     

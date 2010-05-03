@@ -1,8 +1,8 @@
 require "spec_helper"
-describe Ogli::User do
+describe Mogli::User do
   
   let :user_1 do
-    user_1 = Ogli::User.new(:id=>1)
+    user_1 = Mogli::User.new(:id=>1)
     user_1.client = mock_client
     user_1
   end
@@ -12,7 +12,7 @@ describe Ogli::User do
   end
   
   it "allow setting the client" do
-    user = Ogli::User.new
+    user = Mogli::User.new
     user.client = "client"
     user.client.should == "client"
   end
@@ -29,10 +29,10 @@ describe Ogli::User do
   end
   
   it "won't recognize pages" do
-    Ogli::User.recognize?("id"=>1,"name"=>"bob","category"=>"fdhsjkfsd")
+    Mogli::User.recognize?("id"=>1,"name"=>"bob","category"=>"fdhsjkfsd")
   end
   
   it "will recognize itself" do
-    Ogli::User.recognize?("id"=>1,"name"=>"bob")    
+    Mogli::User.recognize?("id"=>1,"name"=>"bob")    
   end
 end

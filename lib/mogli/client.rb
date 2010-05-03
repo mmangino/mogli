@@ -1,13 +1,13 @@
-require "ogli/client/user"
+require "mogli/client/user"
 require "ruby-debug"
 
-module Ogli
+module Mogli
   class Client
     attr_reader :access_token
     attr_reader :default_params
     
     include HTTParty
-    include Ogli::Client::User   
+    include Mogli::Client::User   
     class UnrecognizeableClassError < Exception; end
     
     def api_path(path)
@@ -46,7 +46,7 @@ module Ogli
     end
     
     def extract_fetching_array(hash,klass)
-      f = Ogli::FetchingArray.new
+      f = Mogli::FetchingArray.new
       f.concat(hash["data"])
       f.client = self
       f.classes = Array(klass)
@@ -74,7 +74,7 @@ module Ogli
     end
     
     def constantize_string(klass)
-      klass.is_a?(String) ? Ogli.const_get(klass) : klass
+      klass.is_a?(String) ? Mogli.const_get(klass) : klass
     end
     
     def determine_class(klass_or_klasses,data)

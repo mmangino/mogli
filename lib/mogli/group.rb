@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Group < Hashie::Dash
     include Model
     define_properties :id, :name, :description, :link, :privacy, :updated_time

@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Page < Hashie::Dash
         
     include Model

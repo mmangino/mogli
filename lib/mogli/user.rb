@@ -1,5 +1,5 @@
 
-module Ogli
+module Mogli
   class User < Hashie::Mash
     include Model
     

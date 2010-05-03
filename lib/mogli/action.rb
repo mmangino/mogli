@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Action < Hashie::Mash
     include Model
     

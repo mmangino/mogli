@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Comment < Hashie::Dash
     include Model
     

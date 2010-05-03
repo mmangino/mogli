@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Photo < Hashie::Dash
     include Model
     define_properties :id, :name, :picture, :source, :height, :width, :link, :icon,

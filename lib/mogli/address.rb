@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Address < Hashie::Dash
     include Model
     

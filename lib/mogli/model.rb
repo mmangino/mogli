@@ -1,11 +1,11 @@
-module Ogli
+module Mogli
   module Model
     def client=(val)
       @client=val
     end
     
     def client
-      @client || Ogli::Client.new
+      @client || Mogli::Client.new
     end
 
     def initialize(hash={},client=nil)
@@ -51,7 +51,7 @@ module Ogli
       end
       
       def find(id,client=nil)
-        (client||Ogli::Client.new).get_and_map(id,self)
+        (client||Mogli::Client.new).get_and_map(id,self)
       end
     end
   end

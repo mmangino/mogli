@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Album < Hashie::Dash
     include Model
     

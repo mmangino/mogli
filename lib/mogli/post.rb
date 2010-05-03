@@ -1,4 +1,4 @@
-module Ogli
+module Mogli
   class Post < Hashie::Dash
         
     include Model
