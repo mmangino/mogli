@@ -6,36 +6,64 @@ For documentation on the Open Graph Library, see: http://developers.facebook.com
 Quick Start:
 ======================================
 
-* create a token by following the instructions at http://developers.facebook.com/docs/authentication/desktop
+Add config.gem "mogli" to environment.rb
 
-The important part is to make a request to https://graph.facebook.com/oauth/authorize?client_id=...&redirect_uri=http://www.facebook.com/connect/login_success.html&type=user_agent&display=popup
+For Rails: create a controller like the following:
 
-(they have typos in the tutorial)
+class OauthController < ApplicationController
+  def new
+    session[:access_token]=nil
+    redirect_to authenticator.authorize_url
+  end
+  
+  def create    
+    mogli_client = Mogli::Client.create_from_code_and_authenticator(params[:code],authenticator)
+    session[:at]=mogli_client.access_token
+    redirect_to "/"
+  end
+  
+  def index
+    redirect_to new_oauth_path and return unless session[:at]
+    user = Mogli::User.find("me",Mogli::Client.new(session[:at]))
+    @user = user
+    @posts = user.posts
+  end
+  
+  def authenticator
+    @authenticator ||= Mogli::Authenticator.new('client_id', 
+                                         'secret', 
+                                         oauth_callback_url)
+  end
+end
 
-grab the result and copy the access_token parameter. This will need to be URL decoded.
 
-With the decoded access_token, create a new Mogli client:
+with routes:
 
-in the mogli directory, run
-irb -Ilib
+map.resource :oauth, :controller=>"oauth"
+map.root :controller=>"oauth"
+map.oauth_callback "/oauth/create", :controller=>"oauth", :action=>"create"
+
+Viewing / should redirect you to the login page, and then redirect back to your app to show your recent posts
+
+From the console, you can create a client with the stored access token:
+
 
 require "rubygems"
-require "init"
+require "mogli"
 client = Mogli::Client.new("your_access_token")
 
 You can now fetch users with the client, for example:
 
-myself  = client.user("me")
+myself  = Mogli::User.find("me",client)
 
 or
 
-mikemangino = client.user("12451752")
+mikemangino = Mogli::User.find(12451752,client)
 
 When you fetch yourself, you can look at your posts and other information:
 
 myself.posts
 
-Unfortunately, quite a bit of information is unavailable due to a facebook bug. If you want to see this fixed, please vote for: http://bugs.developers.facebook.com/show_bug.cgi?id=9864
 
 You can also fetch other objects by ID, for example:
 

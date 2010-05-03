@@ -26,6 +26,13 @@ describe Mogli::Client do
       client = Mogli::Client.new
       client.default_params.should == {}
     end
+    
+    it "create get access token from an authenticator and code" do
+      Mogli::Client.should_receive(:get).with("url").and_return("access_token=114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU.&expires=4168")
+      Mogli::Client.get_access_token_for_code_and_authenticator("code",mock("auth",:access_token_url=>"url")).should == "114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU."
+      
+    end
+    
   end
   
   describe "Making requests" do

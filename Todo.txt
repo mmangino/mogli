@@ -1,5 +1,7 @@
 
-1) allow embedding into other classes, example:
+*) add scopes into authentication url stuff
+*) Add expiration time handling
+*) allow embedding into other classes, example:
 
 class User < ActiveRecord::Base
   acts_as_ogli :id=>:facebook_id,:class=>Ogli::User
