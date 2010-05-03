@@ -2,6 +2,10 @@ module Mogli
   
 end
 
+require "httparty"
+require "hashie"
+
+
 require "mogli/model"
 require "mogli/fetching_array"
 require "mogli/action"
