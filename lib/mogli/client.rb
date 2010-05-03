@@ -1,3 +1,4 @@
+require "mogli/client/event"
 require "mogli/client/user"
 require "ruby-debug"
 
@@ -8,6 +9,7 @@ module Mogli
     attr_reader :expiration
     
     include HTTParty
+    include Mogli::Client::Event
     include Mogli::Client::User   
     class UnrecognizeableClassError < Exception; end
     
