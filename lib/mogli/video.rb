@@ -1,6 +1,5 @@
 module Mogli
-  class Video < Hashie::Dash
-    include Model
+  class Video < Model
     
     define_properties :id, :message, :name, :description, :length, :created_time, :updated_time, :icon, :picture, :embed_html
     

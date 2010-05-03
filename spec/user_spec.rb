@@ -35,4 +35,10 @@ describe Mogli::User do
   it "will recognize itself" do
     Mogli::User.recognize?("id"=>1,"name"=>"bob")    
   end
+  
+  it "should emit warnings when properties that don't exist are written to" do
+    m=Mogli::User.new
+    m.should_receive(:warn_about_invalid_property).with("doesnt_exist")
+    m.doesnt_exist=1
+  end
 end

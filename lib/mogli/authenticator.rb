@@ -9,8 +9,10 @@ module Mogli
       @callback_url = callback_url
     end
     
-    def authorize_url
-      "https://graph.facebook.com/oauth/authorize?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url)}"
+    def authorize_url(*scopes)
+      scopes = scopes.flatten
+      scope_part = "&scope=#{scopes.join(",")}" unless scopes.blank?
+      "https://graph.facebook.com/oauth/authorize?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url)}#{scope_part}"
     end
     
     def access_token_url(code)

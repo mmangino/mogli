@@ -1,6 +1,5 @@
 module Mogli
-  class Activity < Hashie::Mash
-    include Model
-    
+  class Activity < Model
+    define_properties :name, :category, :id
   end
 end

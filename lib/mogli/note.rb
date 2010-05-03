@@ -1,6 +1,5 @@
 module Mogli
-  class Note < Hashie::Dash
-    include Model
+  class Note < Model
     
     define_properties :id, :subject, :message, :created_time, :updated_time, :icon
     

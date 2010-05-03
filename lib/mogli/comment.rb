@@ -1,6 +1,5 @@
 module Mogli
-  class Comment < Hashie::Dash
-    include Model
+  class Comment < Model
     
     define_properties :id, :message, :created_time
     

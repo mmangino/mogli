@@ -1,6 +1,7 @@
 module Mogli
-  class Book < Hashie::Mash
-    include Model
+  class Book < Model
+    define_properties :name, :category, :id
+    
     
   end
 end

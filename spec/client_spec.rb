@@ -16,6 +16,18 @@ describe Mogli::Client do
       client = Mogli::Client.new("myaccesstoken")
       client.default_params.should == {:access_token=>"myaccesstoken"}
     end
+    
+    it "sets the expiration time if provided" do
+      old_now=Time.now
+      Time.stub!(:now).and_return(old_now)
+      client = Mogli::Client.new("myaccesstoken",6890)
+      client.expiration.should == old_now+6890
+    end
+
+    it "should know if the session is expired" do
+      client = Mogli::Client.new("myaccesstoken",-100)
+      client.should be_expired
+    end
 
     it "allow creation with no access token" do
       client = Mogli::Client.new
@@ -29,8 +41,9 @@ describe Mogli::Client do
     
     it "create get access token from an authenticator and code" do
       Mogli::Client.should_receive(:get).with("url").and_return("access_token=114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU.&expires=4168")
-      Mogli::Client.get_access_token_for_code_and_authenticator("code",mock("auth",:access_token_url=>"url")).should == "114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU."
-      
+      client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
+      client.access_token.should == "114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU."
+      client.expiration.should_not be_nil
     end
     
   end
@@ -128,6 +141,11 @@ describe Mogli::Client do
         Mogli::User.should_receive(:recognize?).with(:id=>1).and_return(false)
         Mogli::Post.should_receive(:recognize?).with(:id=>1).and_return(true)
         client.create_instance(["User","Post"],{:id=>1}).should be_an_instance_of(Mogli::Post)
+      end
+      
+      it "will use the first class if none are recognized" do
+        Mogli::Page.should_receive(:recognize?).with(:id=>1).and_return(false)
+        client.create_instance(["Page"],{:id=>1}).should be_an_instance_of(Mogli::Page)        
       end
     end
   end

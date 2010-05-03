@@ -1,6 +1,5 @@
 module Mogli
-  class Interest < Hashie::Mash
-    include Model
-    
+  class Interest < Model
+    define_properties :id, :name
   end
 end

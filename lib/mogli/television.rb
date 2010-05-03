@@ -1,6 +1,6 @@
 module Mogli
-  class Television < Hashie::Mash
-    include Model
+  class Television < Model
+    define_properties :name, :category, :id
     
   end
 end

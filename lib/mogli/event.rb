@@ -1,6 +1,5 @@
 module Mogli
-  class Event < Hashie::Dash
-    include Model
+  class Event < Model
     define_properties :id, :name, :description, :start_time, :end_time, :location, :privacy, :updated_time
     
     hash_populating_accessor :venue, "Address"

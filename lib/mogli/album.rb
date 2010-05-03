@@ -1,6 +1,5 @@
 module Mogli
-  class Album < Hashie::Dash
-    include Model
+  class Album < Model
     
     define_properties :id, :name, :description, :link, :count, :created_time, :updated_time
     

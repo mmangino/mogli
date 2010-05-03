@@ -1,6 +1,5 @@
 module Mogli
-  class Address < Hashie::Dash
-    include Model
+  class Address < Model
     
     define_properties :street, :city, :state, :zip, :country, :latitude, :longitude
   end

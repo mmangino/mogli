@@ -1,5 +1,5 @@
 module Mogli
-  module Model
+  class Model < Hashie::Dash
     def client=(val)
       @client=val
     end
@@ -10,49 +10,56 @@ module Mogli
 
     def initialize(hash={},client=nil)
       self.client=client
-      super(hash)
+      super(hash||{})
     end
     
     def self.included(other)
       other.extend(ClassMethods)
     end
 
+    def method_missing(method, *args)
+      method_as_s = method.to_s
+      if method_as_s.to_s[-1].chr == "="
+        warn_about_invalid_property(method_as_s.chop)
+      else 
+        super
+      end
+    end
+    def warn_about_invalid_property(property)
+      puts "Warning: property #{property} doesn't exist for class #{self.class.name}"
+    end
+          
+    def self.define_properties(*args)
+      args.each do |arg|
+        property arg
+      end
+    end
     
-    module ClassMethods
-      
-      
-      def define_properties(*args)
-        args.each do |arg|
-          property arg
+    def self.hash_populating_accessor(method_name,*klass)
+      define_method "#{method_name}=" do |hash|
+        instance_variable_set("@#{method_name}",client.map_data(hash,klass))
+      end
+      define_method "#{method_name}" do
+        instance_variable_get "@#{method_name}"
+      end
+    end
+    
+    def self.has_association(name,klass)
+      define_method name do
+        if (ret=instance_variable_get("@#{name}")).nil?
+          ret = client.get_and_map("/#{id}/#{name}",klass)
+          instance_variable_set("@#{name}",ret)
         end
+        return ret
       end
-      
-      def hash_populating_accessor(method_name,*klass)
-        define_method "#{method_name}=" do |hash|
-          instance_variable_set("@#{method_name}",client.map_data(hash,klass))
-        end
-        define_method "#{method_name}" do
-          instance_variable_get "@#{method_name}"
-        end
-      end
-      
-      def has_association(name,klass)
-        define_method name do
-          if (ret=instance_variable_get("@#{name}")).nil?
-            ret = client.get_and_map("/#{id}/#{name}",klass)
-            instance_variable_set("@#{name}",ret)
-          end
-          return ret
-        end
-      end
-      
-      def recognize?(data)
-        true
-      end
-      
-      def find(id,client=nil)
-        (client||Mogli::Client.new).get_and_map(id,self)
-      end
+    end
+    
+    def self.recognize?(data)
+      true
+    end
+    
+    def self.find(id,client=nil)
+      (client||Mogli::Client.new).get_and_map(id,self)
     end
   end
 end

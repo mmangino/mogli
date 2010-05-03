@@ -1,6 +1,6 @@
 module Mogli
-  class Movie < Hashie::Mash
-    include Model
+  class Movie < Model
+    define_properties :name, :category, :id
     
   end
 end

@@ -1,6 +1,6 @@
 module Mogli
-  class Action < Hashie::Mash
-    include Model
+  class Action < Model
+    define_properties :name, :link
     
   end
 end

@@ -1,6 +1,5 @@
 module Mogli
-  class Photo < Hashie::Dash
-    include Model
+  class Photo < Model
     define_properties :id, :name, :picture, :source, :height, :width, :link, :icon,
       :created_time, :updated_time
     
