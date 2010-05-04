@@ -17,4 +17,11 @@ describe Mogli::Post do
     post.comments.first.client.access_token.should == "my_api_key"
   end
   
+  it "knows which attributes are posted" do
+    Mogli::Post.new(:message=>1,:picture=>2,:link=>3,:name=>4,:description=>5,:created_time=>6).post_params.should ==
+       {:message=>1,:picture=>2,:link=>3,:name=>4,:description=>5}
+      
+  end
+  
+  
 end

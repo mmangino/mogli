@@ -19,7 +19,9 @@ module Mogli
     
     def initialize(access_token = nil,expiration=nil)
       @access_token = access_token
-      @expiration = Time.now + expiration if expiration
+      # nil expiration means extended access
+      expiration = 10*365*24*60*60 if expiration.nil? or expiration == 0
+      @expiration = Time.now + expiration
       @default_params = @access_token ? {:access_token=>access_token} : {}
     end
     
@@ -35,6 +37,11 @@ module Mogli
         hash[k]=v
       end
       new(hash["access_token"],hash["expires"].to_s.to_i)
+    end
+    
+    def post(path,klass,body_args)
+      data = self.class.post(api_path(path),:body=>default_params.merge(body_args))      
+      map_data(data,klass)
     end
     
     def get_and_map(path,klass=nil)

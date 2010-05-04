@@ -5,8 +5,14 @@ module Mogli
       :description, :source, :icon, :attribution, :actions, :likes,
       :created_time, :updated_time, :privacy
     
+    creation_properties :message, :picture, :link, :name, :description
+        
     hash_populating_accessor :actions, "Action"
     hash_populating_accessor :comments, "Comment"
     hash_populating_accessor :from, "User"
+    
+    def likes_create
+      client.post("#{id}/likes",{})
+    end
   end
 end

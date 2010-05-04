@@ -1,8 +1,8 @@
 
 module Mogli
-  class User < Model
+  class User < Profile
     
-    define_properties :id, :first_name, :last_name, :name, :link, :about, :birthday, 
+    define_properties :first_name, :last_name, :link, :about, :birthday, 
           :email, :website, :timezone, :updated_time, :verified
     
     def self.recognize?(hash)
@@ -13,14 +13,13 @@ module Mogli
     hash_populating_accessor :education, "Education"
 
     has_association :activities,"Activity"
-    has_association :albums,"Album"
     has_association :friends, "User"
     has_association :interests, "Interest"
     has_association :music, "Music"
     has_association :books, "Book"
     has_association :movies, "Movie"
     has_association :television, "Television"
-    has_association :posts, "Post"
-    has_association :feed, "Post"
+    has_association :likes, "Page"
+    
   end
 end

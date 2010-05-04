@@ -13,6 +13,14 @@ module Mogli
       super(hash||{})
     end
     
+    def post_params
+      post_params = {}
+      self.class.creation_keys.each do |key|
+        post_params[key] = self[key]
+      end
+      post_params
+    end
+    
     def self.included(other)
       other.extend(ClassMethods)
     end
@@ -35,6 +43,14 @@ module Mogli
       end
     end
     
+    def self.creation_properties(*args)
+      @creation_properties = args
+    end
+    
+    def self.creation_keys
+      @creation_properties || []
+    end
+    
     def self.hash_populating_accessor(method_name,*klass)
       define_method "#{method_name}=" do |hash|
         instance_variable_set("@#{method_name}",client.map_data(hash,klass))
@@ -47,10 +63,14 @@ module Mogli
     def self.has_association(name,klass)
       define_method name do
         if (ret=instance_variable_get("@#{name}")).nil?
-          ret = client.get_and_map("/#{id}/#{name}",klass)
+          ret = client.get_and_map("#{id}/#{name}",klass)
           instance_variable_set("@#{name}",ret)
         end
         return ret
+      end
+      
+      define_method "#{name}_create" do |arg|
+        client.post("#{id}/#{name}", klass, arg.post_params)
       end
     end
     
