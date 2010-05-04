@@ -76,6 +76,12 @@ describe Mogli::Client do
     end
   end
   
+  it "allows deleting" do
+    Mogli::Client.should_receive(:delete).with("http://graph.facebook.com/1",:query=>{:access_token=>"1234"})
+    client = Mogli::Client.new("1234")
+    client.delete("1")
+  end
+  
   describe "result mapping" do
     
     let :user_data do

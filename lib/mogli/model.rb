@@ -21,6 +21,11 @@ module Mogli
       post_params
     end
     
+    def destroy
+      client.delete(id)
+      freeze
+    end
+    
     def self.included(other)
       other.extend(ClassMethods)
     end
@@ -70,7 +75,9 @@ module Mogli
       end
       
       define_method "#{name}_create" do |arg|
-        client.post("#{id}/#{name}", klass, arg.post_params)
+        params = arg.nil? ? {} : arg.post_params
+        klass_to_send = arg.nil? ? nil : klass
+        client.post("#{id}/#{name}", klass_to_send, params)
       end
     end
     

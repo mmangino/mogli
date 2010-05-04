@@ -28,6 +28,12 @@ describe Mogli::Event do
     event_1.noreply
   end
   
+  it "will allow updating status with no object" do
+    mock_client.should_receive(:post).once.with("1/attending",nil,{}).and_return([])
+    event_1.attending_create
+    
+  end
+  
   it "will recognize itself" do
     Mogli::Event.recognize?("id"=>1,"name"=>"Ruby Hackfest")    
   end

@@ -44,6 +44,10 @@ module Mogli
       map_data(data,klass)
     end
     
+    def delete(path)
+      self.class.delete(api_path(path),:query=>default_params)
+    end
+    
     def get_and_map(path,klass=nil)
       data = self.class.get(api_path(path),:query=>default_params)
       map_data(data,klass)
