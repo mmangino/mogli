@@ -17,4 +17,25 @@ describe Mogli::Post do
     post.comments.first.client.access_token.should == "my_api_key"
   end
   
+  it "allows deleting the post" do
+    client = Mogli::Client.new("client")
+    client.should_receive(:delete).with("1")
+    Mogli::Post.new(:id=>"1",:client=>client).destroy
+  end
+  
+  it "freezes deleted objects" do
+    client = Mogli::Client.new("client")
+    client.should_receive(:delete).with("1")
+    post = Mogli::Post.new(:id=>"1",:client=>client)
+    post.destroy
+    post.should be_frozen
+  end
+  
+  it "knows which attributes are posted" do
+    Mogli::Post.new(:message=>1,:picture=>2,:link=>3,:name=>4,:description=>5,:created_time=>6).post_params.should ==
+       {:message=>1,:picture=>2,:link=>3,:name=>4,:description=>5}
+      
+  end
+  
+  
 end

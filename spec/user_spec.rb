@@ -18,12 +18,12 @@ describe Mogli::User do
   end
   
   it "have an activities attribute which fetches when called" do
-    mock_client.should_receive(:get_and_map).with("/1/activities","Activity").and_return("activities")
+    mock_client.should_receive(:get_and_map).with("1/activities","Activity").and_return("activities")
     user_1.activities.should == "activities"
   end
   
   it "only fetch activities once" do
-    mock_client.should_receive(:get_and_map).once.with("/1/activities","Activity").and_return([])
+    mock_client.should_receive(:get_and_map).once.with("1/activities","Activity").and_return([])
     user_1.activities
     user_1.activities
   end
@@ -41,4 +41,24 @@ describe Mogli::User do
     m.should_receive(:warn_about_invalid_property).with("doesnt_exist")
     m.doesnt_exist=1
   end
+  
+  describe "feed creation" do
+    before(:each) do
+      @user = Mogli::User.new(:id=>12345)
+      @client = mock(:client)
+      @user.client = @client
+      @client.stub!(:post)
+    end
+    
+    it "has a create method on feed" do
+      @user.feed_create(Mogli::Post.new)
+    end
+
+    it "posts the params to the client" do
+      @client.should_receive(:post).with("12345/feed","Post",:message=>"my message",:picture=>nil,:link=>nil,:name=>nil,:description=>nil)
+      @user.feed_create(Mogli::Post.new(:message=>"my message"))
+    end
+  
+  end
+  
 end

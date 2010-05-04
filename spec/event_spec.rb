@@ -18,14 +18,20 @@ describe Mogli::Event do
   end
   
   it "have a noreply attribute which fetches when called" do
-    mock_client.should_receive(:get_and_map).with("/1/noreply","User").and_return("noreply")
+    mock_client.should_receive(:get_and_map).with("1/noreply","User").and_return("noreply")
     event_1.noreply.should == "noreply"
   end
   
   it "only fetch noreply once" do
-    mock_client.should_receive(:get_and_map).once.with("/1/noreply","User").and_return([])
+    mock_client.should_receive(:get_and_map).once.with("1/noreply","User").and_return([])
     event_1.noreply
     event_1.noreply
+  end
+  
+  it "will allow updating status with no object" do
+    mock_client.should_receive(:post).once.with("1/attending",nil,{}).and_return([])
+    event_1.attending_create
+    
   end
   
   it "will recognize itself" do

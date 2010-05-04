@@ -13,6 +13,19 @@ module Mogli
       super(hash||{})
     end
     
+    def post_params
+      post_params = {}
+      self.class.creation_keys.each do |key|
+        post_params[key] = self[key]
+      end
+      post_params
+    end
+    
+    def destroy
+      client.delete(id)
+      freeze
+    end
+    
     def self.included(other)
       other.extend(ClassMethods)
     end
@@ -35,6 +48,14 @@ module Mogli
       end
     end
     
+    def self.creation_properties(*args)
+      @creation_properties = args
+    end
+    
+    def self.creation_keys
+      @creation_properties || []
+    end
+    
     def self.hash_populating_accessor(method_name,*klass)
       define_method "#{method_name}=" do |hash|
         instance_variable_set("@#{method_name}",client.map_data(hash,klass))
@@ -42,16 +63,29 @@ module Mogli
       define_method "#{method_name}" do
         instance_variable_get "@#{method_name}"
       end
+      
+      add_creation_method(method_name,klass)
+      
+    end
+    
+    def self.add_creation_method(name,klass)
+      define_method "#{name}_create" do |arg|
+        params = arg.nil? ? {} : arg.post_params
+        klass_to_send = arg.nil? ? nil : klass
+        client.post("#{id}/#{name}", klass_to_send, params)
+      end
     end
     
     def self.has_association(name,klass)
       define_method name do
         if (ret=instance_variable_get("@#{name}")).nil?
-          ret = client.get_and_map("/#{id}/#{name}",klass)
+          ret = client.get_and_map("#{id}/#{name}",klass)
           instance_variable_set("@#{name}",ret)
         end
         return ret
       end
+      
+      add_creation_method(name,klass)
     end
     
     def self.recognize?(data)

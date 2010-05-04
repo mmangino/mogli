@@ -45,11 +45,41 @@ describe Mogli::Client do
       client.access_token.should == "114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU."
       client.expiration.should_not be_nil
     end
+
+    it "create set the expiration into the future if there is on param" do
+      Mogli::Client.should_receive(:get).with("url").and_return("access_token=114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU.")
+      client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
+      (client.expiration > Time.now+365*24*60*60).should be_true
+    end
     
   end
   
   describe "Making requests" do
+    it "posts with the parameters in the body" do
+      Mogli::Client.should_receive(:post).with("http://graph.facebook.com/1/feed",:body=>{:message=>"message",:access_token=>"1234"})
+      client = Mogli::Client.new("1234")
+      client.post("1/feed","Post",:message=>"message")
+    end
     
+    it "parses errors in the returns of posts" do
+      Mogli::Client.should_receive(:post).and_return({"error"=>{"type"=>"OAuthAccessTokenException","message"=>"An access token is required to request this resource."}})
+      client = Mogli::Client.new("1234")
+      lambda do
+        result = client.post("1/feed","Post",:message=>"message")
+      end.should raise_error
+    end
+    it "creates objects of the returned type" do
+      Mogli::Client.should_receive(:post).and_return({:id=>123434})
+      client = Mogli::Client.new("1234")
+      result = client.post("1/feed","Post",:message=>"message")
+      result.should == Mogli::Post.new(:id=>123434)
+    end
+  end
+  
+  it "allows deleting" do
+    Mogli::Client.should_receive(:delete).with("http://graph.facebook.com/1",:query=>{:access_token=>"1234"})
+    client = Mogli::Client.new("1234")
+    client.delete("1")
   end
   
   describe "result mapping" do
