@@ -63,6 +63,17 @@ module Mogli
       define_method "#{method_name}" do
         instance_variable_get "@#{method_name}"
       end
+      
+      add_creation_method(method_name,klass)
+      
+    end
+    
+    def self.add_creation_method(name,klass)
+      define_method "#{name}_create" do |arg|
+        params = arg.nil? ? {} : arg.post_params
+        klass_to_send = arg.nil? ? nil : klass
+        client.post("#{id}/#{name}", klass_to_send, params)
+      end
     end
     
     def self.has_association(name,klass)
@@ -74,11 +85,7 @@ module Mogli
         return ret
       end
       
-      define_method "#{name}_create" do |arg|
-        params = arg.nil? ? {} : arg.post_params
-        klass_to_send = arg.nil? ? nil : klass
-        client.post("#{id}/#{name}", klass_to_send, params)
-      end
+      add_creation_method(name,klass)
     end
     
     def self.recognize?(data)

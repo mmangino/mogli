@@ -12,7 +12,7 @@ module Mogli
     hash_populating_accessor :from, "User"
     
     def likes_create
-      client.post("#{id}/likes",{})
+      client.post("#{id}/likes",nil,{})
     end
   end
 end

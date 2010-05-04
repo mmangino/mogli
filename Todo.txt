@@ -1,5 +1,4 @@
 
-*) handle event based creation
 *) handle picture attributes
 *) allow embedding into other classes, example:
 
