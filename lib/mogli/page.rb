@@ -1,17 +1,16 @@
 module Mogli
   class Page < Profile
         
-    define_properties :id, :name, :category
+    define_properties :id, :name, :category, :username
     
-    hash_populating_accessor :founded, "Founded"
-    hash_populating_accessor :products, "Products"
-    hash_populating_accessor :username, "Username"
-    hash_populating_accessor :mission, "Mission"
-    hash_populating_accessor :company_overview, "Company Overview"
-    hash_populating_accessor :fan_count, "Fan Count"
-    hash_populating_accessor :has_added_app, "Has Added App"
-    hash_populating_accessor :link, "Link"
-    hash_populating_accessor :picture, "Picture"
+    # General
+    define_properties :fan_count, :link, :picture, :has_added_app
+
+    # Retail
+    define_properties :founded, :products, :mission, :company_overview
+    
+    # Musicians
+    define_properties :record_label, :hometown, :band_members, :genre
     
     def self.recognize?(hash)
       hash.has_key?("category")
