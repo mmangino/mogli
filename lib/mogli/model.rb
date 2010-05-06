@@ -88,6 +88,12 @@ module Mogli
       add_creation_method(name,klass)
     end
     
+    def fetch
+      raise ArgumentError.new("You cannot fetch models without a populated id attribute") if id.nil?
+      other = self.class.find(id,client)
+      merge!(other)
+    end
+    
     def self.recognize?(data)
       true
     end

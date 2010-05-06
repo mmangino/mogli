@@ -93,11 +93,24 @@ describe Mogli::Model do
     model.comments_create 
   end
   
-  it "should emit warnings when properties that don't exist are written to" do
+  it "emits warnings when properties that don't exist are written to" do
     model.should_receive(:warn_about_invalid_property).with("doesnt_exist")
     model.doesnt_exist=1
   end
   
+  describe "Fetching" do
   
+    it "fetches data for a model with an id " do
+      Mogli::Client.should_receive(:get).with("http://graph.facebook.com/1", :query=>{}).and_return({:id=>1,:other_property=>2})
+      model.fetch
+      model.other_property.should == 2
+    end
+    
+    it "raises an exception when there is no id" do
+      lambda do
+        TestModel.new.fetch
+      end.should raise_error(ArgumentError)
+    end
+  end
   
 end
