@@ -1,6 +1,5 @@
 require "mogli/client/event"
 require "mogli/client/user"
-require "ruby-debug"
 
 module Mogli
   class Client
