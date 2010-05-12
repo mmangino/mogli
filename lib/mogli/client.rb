@@ -13,7 +13,7 @@ module Mogli
     class UnrecognizeableClassError < Exception; end
     
     def api_path(path)
-      "http://graph.facebook.com/#{path}"
+      "https://graph.facebook.com/#{path}"
     end
     
     def initialize(access_token = nil,expiration=nil)

@@ -101,7 +101,7 @@ describe Mogli::Model do
   describe "Fetching" do
   
     it "fetches data for a model with an id " do
-      Mogli::Client.should_receive(:get).with("http://graph.facebook.com/1", :query=>{}).and_return({:id=>1,:other_property=>2})
+      Mogli::Client.should_receive(:get).with("https://graph.facebook.com/1", :query=>{}).and_return({:id=>1,:other_property=>2})
       model.fetch
       model.other_property.should == 2
     end

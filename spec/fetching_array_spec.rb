@@ -5,8 +5,8 @@ describe Mogli::FetchingArray do
     array = Mogli::FetchingArray.new
     array << Mogli::User.new(:id=>4)
     array << Mogli::User.new(:id=>5)
-    array.next_url = "http://next"
-    array.previous_url = "http://previous"
+    array.next_url = "https://next"
+    array.previous_url = "https://previous"
     array.client = client
     array.classes = [Mogli::User]
     array
@@ -17,11 +17,11 @@ describe Mogli::FetchingArray do
   end
   
   it "has a next_url" do
-    fetching_array.next_url.should == "http://next"
+    fetching_array.next_url.should == "https://next"
   end
   
   it "has a previous url" do
-    fetching_array.previous_url.should == "http://previous"    
+    fetching_array.previous_url.should == "https://previous"    
   end
   
   it "has a client" do
@@ -36,7 +36,7 @@ describe Mogli::FetchingArray do
 
   describe "fetching" do
     before(:each) do
-      Mogli::Client.stub!(:get).and_return("data"=>[:id=>3],"paging"=>{"previous"=>"http://new_previous","next"=>"http://new_next"})
+      Mogli::Client.stub!(:get).and_return("data"=>[:id=>3],"paging"=>{"previous"=>"https://new_previous","next"=>"https://new_next"})
     end
     
     describe "fetch next" do
@@ -52,13 +52,13 @@ describe Mogli::FetchingArray do
     
       it "updates the next url with the newly fetched next url" do
         fetching_array.fetch_next
-        fetching_array.next_url.should == "http://new_next"
+        fetching_array.next_url.should == "https://new_next"
       
       end
       
       it "should not change the previous url" do
         fetching_array.fetch_next
-        fetching_array.previous_url.should == "http://previous"
+        fetching_array.previous_url.should == "https://previous"
       end
     
       it "returns the new records" do
@@ -81,12 +81,12 @@ describe Mogli::FetchingArray do
     
       it "updates the previous url with the newly fetched previous url" do
         fetching_array.fetch_previous
-        fetching_array.previous_url.should == "http://new_previous"
+        fetching_array.previous_url.should == "https://new_previous"
       end
       
       it "should not change the next url" do
         fetching_array.fetch_previous
-        fetching_array.next_url.should == "http://next"
+        fetching_array.next_url.should == "https://next"
       end
     
       it "returns the new records" do

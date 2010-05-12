@@ -21,12 +21,8 @@ describe Mogli::Authenticator do
     authenticator.authorize_url.should == "https://graph.facebook.com/oauth/authorize?client_id=123456&redirect_uri=http%3A%2F%2Fexample.com%2Furl"
   end
   
-  it "creates the authorize_url with scopes splatted" do
-    authenticator.authorize_url(:user_photos,:user_videos,:stream_publish).should == 
-      "https://graph.facebook.com/oauth/authorize?client_id=123456&redirect_uri=http%3A%2F%2Fexample.com%2Furl&scope=user_photos,user_videos,stream_publish"    
-  end
   it "creates the authorize_url with scopes as an array" do
-    authenticator.authorize_url([:user_photos,:user_videos,:stream_publish]).should == 
+    authenticator.authorize_url(:scope=>[:user_photos,:user_videos,:stream_publish]).should == 
       "https://graph.facebook.com/oauth/authorize?client_id=123456&redirect_uri=http%3A%2F%2Fexample.com%2Furl&scope=user_photos,user_videos,stream_publish"    
   end
   

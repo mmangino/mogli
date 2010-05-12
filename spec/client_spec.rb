@@ -56,7 +56,7 @@ describe Mogli::Client do
   
   describe "Making requests" do
     it "posts with the parameters in the body" do
-      Mogli::Client.should_receive(:post).with("http://graph.facebook.com/1/feed",:body=>{:message=>"message",:access_token=>"1234"})
+      Mogli::Client.should_receive(:post).with("https://graph.facebook.com/1/feed",:body=>{:message=>"message",:access_token=>"1234"})
       client = Mogli::Client.new("1234")
       client.post("1/feed","Post",:message=>"message")
     end
@@ -77,7 +77,7 @@ describe Mogli::Client do
   end
   
   it "allows deleting" do
-    Mogli::Client.should_receive(:delete).with("http://graph.facebook.com/1",:query=>{:access_token=>"1234"})
+    Mogli::Client.should_receive(:delete).with("https://graph.facebook.com/1",:query=>{:access_token=>"1234"})
     client = Mogli::Client.new("1234")
     client.delete("1")
   end
