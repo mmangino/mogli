@@ -77,9 +77,10 @@ module Mogli
     end
     
     def self.has_association(name,klass)
-      define_method name do
+      define_method name do |*fields|
+        body_args = fields.empty? ? {} : {:fields => fields}
         if (ret=instance_variable_get("@#{name}")).nil?
-          ret = client.get_and_map("#{id}/#{name}",klass)
+          ret = client.get_and_map("#{id}/#{name}",klass, body_args)
           instance_variable_set("@#{name}",ret)
         end
         return ret

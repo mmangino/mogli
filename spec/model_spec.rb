@@ -34,12 +34,12 @@ describe Mogli::Model do
   end
 
   it "have an comments attribute which fetches when called" do
-    mock_client.should_receive(:get_and_map).with("1/comments","Comment").and_return("comments")
+    mock_client.should_receive(:get_and_map).with("1/comments","Comment", {}).and_return("comments")
     model.comments.should == "comments"
   end
 
   it "only fetch activities once" do
-    mock_client.should_receive(:get_and_map).once.with("1/comments","Comment").and_return([])
+    mock_client.should_receive(:get_and_map).once.with("1/comments","Comment", {}).and_return([])
     model.comments
     model.comments
   end
