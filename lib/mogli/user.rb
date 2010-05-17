@@ -2,7 +2,7 @@
 module Mogli
   class User < Profile
     
-    define_properties :first_name, :last_name, :link, :about, :birthday, 
+    define_properties :first_name, :last_name, :link, :about, :birthday, :gender,
           :email, :website, :timezone, :updated_time, :verified
     
     def self.recognize?(hash)
@@ -11,6 +11,9 @@ module Mogli
     
     hash_populating_accessor :work, "Work"
     hash_populating_accessor :education, "Education"
+    
+    hash_populating_accessor :location, "Page"
+    hash_populating_accessor :hometown, "Page"
 
     has_association :activities,"Activity"
     has_association :friends, "User"
