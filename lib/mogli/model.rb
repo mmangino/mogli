@@ -89,7 +89,7 @@ module Mogli
       add_creation_method(name,klass)
     end
     
-    def fetch
+    def fetch()
       raise ArgumentError.new("You cannot fetch models without a populated id attribute") if id.nil?
       other = self.class.find(id,client)
       merge!(other)
@@ -99,8 +99,9 @@ module Mogli
       true
     end
     
-    def self.find(id,client=nil)
-      (client||Mogli::Client.new).get_and_map(id,self)
+    def self.find(id,client=nil, *fields)
+      body_args = fields.empty? ? {} : {:fields => fields}
+      (client||Mogli::Client.new).get_and_map(id,self, body_args)
     end
   end
 end

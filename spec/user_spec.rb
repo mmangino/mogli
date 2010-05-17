@@ -22,5 +22,23 @@ describe Mogli::User do
   end
   
   
+  describe "Finding" do
+    
+    it "finds optional fields for a user" do
+      Mogli::Client.should_receive(:get).with("https://graph.facebook.com/1",
+        :query=>{:fields => [:birthday, :gender]}).and_return({:id=>1, :birthday=>'09/15', :gender => 'male'})
+      user = Mogli::User.find(1, nil, :birthday, :gender)
+      user.birthday.should == '09/15'
+      user.gender.should == 'male'
+    end
+  
+    it "finds a user's friends with optional fields" do
+      mock_client.should_receive(:get_and_map).with(
+        "1/friends", "User", {:fields => [:birthday, :gender]}).and_return(
+        [Mogli::User.new(:id=>2, :birthday=>'09/15', :gender => 'male')])
+      friends = user_1.friends(:birthday, :gender)
+      friends.size.should == 1
+    end
+  end
   
 end
