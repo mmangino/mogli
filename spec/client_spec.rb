@@ -20,12 +20,12 @@ describe Mogli::Client do
     it "sets the expiration time if provided" do
       old_now=Time.now
       Time.stub!(:now).and_return(old_now)
-      client = Mogli::Client.new("myaccesstoken",6890)
-      client.expiration.should == old_now+6890
+      client = Mogli::Client.new("myaccesstoken",old_now.to_i)
+      client.expiration.to_i.should == old_now.to_i
     end
 
     it "should know if the session is expired" do
-      client = Mogli::Client.new("myaccesstoken",-100)
+      client = Mogli::Client.new("myaccesstoken",Time.now - 100)
       client.should be_expired
     end
 

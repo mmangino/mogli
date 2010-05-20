@@ -19,8 +19,8 @@ module Mogli
     def initialize(access_token = nil,expiration=nil)
       @access_token = access_token
       # nil expiration means extended access
-      expiration = 10*365*24*60*60 if expiration.nil? or expiration == 0
-      @expiration = Time.now + expiration
+      expiration = Time.now.to_i + 10*365*24*60*60 if expiration.nil? or expiration == 0
+      @expiration = Time.at(expiration)
       @default_params = @access_token ? {:access_token=>access_token} : {}
     end
     
