@@ -68,6 +68,7 @@ describe Mogli::Client do
         result = client.post("1/feed","Post",:message=>"message")
       end.should raise_error
     end
+        
     it "creates objects of the returned type" do
       Mogli::Client.should_receive(:post).and_return({:id=>123434})
       client = Mogli::Client.new("1234")
@@ -145,6 +146,11 @@ describe Mogli::Client do
     it "sets the client in the newly created instance" do
       user = client.map_data(user_data,Mogli::User)
       user.client.should == client
+    end
+    
+    it "returns nil if Facebook says false" do
+      Mogli::Client.should_receive(:get).and_return(false)
+      client.get_and_map(148800401968,"User").should be_nil
     end
     
     it "raises an exception when there is just an error" do

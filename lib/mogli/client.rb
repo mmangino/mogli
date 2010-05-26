@@ -67,6 +67,7 @@ module Mogli
     #protected
     
     def extract_hash_or_array(hash_or_array,klass)
+      return nil if hash_or_array == false
       return hash_or_array if hash_or_array.nil? or hash_or_array.kind_of?(Array)
       return extract_fetching_array(hash_or_array,klass) if hash_or_array.has_key?("data")
       return hash_or_array
@@ -85,6 +86,7 @@ module Mogli
     end
     
     def map_to_class(hash_or_array,klass)
+      return nil if hash_or_array.nil?
       if hash_or_array.kind_of?(Array)
         hash_or_array.map! {|i| create_instance(klass,i)}
       else
