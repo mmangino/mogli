@@ -66,7 +66,7 @@ describe Mogli::Model do
   end
 
   it "populates activities from a hash array" do
-    model.activities = {"data"=>[{"id"=>1,"message"=>"message1"},{"id"=>2}]}
+    model.activities = {"data"=>[{"id"=>1,"name"=>"Coding"},{"id"=>2}]}
     model.activities.size.should == 2
     model.activities.each {|c| c.should be_an_instance_of(Mogli::Activity)}
     model.activities.first.id.should == 1
