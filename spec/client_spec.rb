@@ -36,6 +36,19 @@ describe Mogli::Client do
       client.access_token.should == '123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo'
     end
 
+    it "doesn't bail when the session key is stale" do
+      Time.stub!(:now).and_return(1270000000)
+      authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
+      authenticator.should_receive(:get_access_token_for_session_key).
+                    with('mysessionkey').
+                    and_return(nil)
+      Mogli::Authenticator.should_receive(:new).and_return(authenticator)
+      lambda {
+        client = Mogli::Client.create_from_session_key(
+                   'mysessionkey', '123456', 'secret')
+      }.should_not raise_exception(NoMethodError, /nil/)
+    end
+
     it "sets the access_token into the default params" do
       client = Mogli::Client.new("myaccesstoken")
       client.default_params.should == {:access_token=>"myaccesstoken"}
