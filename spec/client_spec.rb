@@ -12,41 +12,55 @@ describe Mogli::Client do
       client.access_token.should == "myaccesstoken"
     end
 
-    it "allows creating with a session_key" do
-      Time.stub!(:now).and_return(1270000000)
-      authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
-      authenticator.should_receive(:get_access_token_for_session_key).
-                    with('mysessionkey').
-                    and_return({'access_token' => 'myaccesstoken',
-                                'expires' => 5000})
-      Mogli::Authenticator.should_receive(:new).and_return(authenticator)
-      client = Mogli::Client.create_from_session_key(
-                 'mysessionkey', '123456', 'secret')
-      client.access_token.should == 'myaccesstoken'
-      client.expiration.should == Time.at(1270005000)
-    end
-    
-    it "allows creating and authenticating as an application" do
-      authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
-      authenticator.should_receive(:get_access_token_for_application).
-                    and_return("123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo")
-      Mogli::Authenticator.should_receive(:new).and_return(authenticator)
-      client = Mogli::Client.create_and_authenticate_as_application(
-                 'mysessionkey', '123456')
-      client.access_token.should == '123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo'
-    end
-
-    it "doesn't bail when the session key is stale" do
-      Time.stub!(:now).and_return(1270000000)
-      authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
-      authenticator.should_receive(:get_access_token_for_session_key).
-                    with('mysessionkey').
-                    and_return(nil)
-      Mogli::Authenticator.should_receive(:new).and_return(authenticator)
-      lambda {
+    context "when exchanging a session key" do
+      it "allows creating" do
+        Time.stub!(:now).and_return(1270000000)
+        authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
+        authenticator.should_receive(:get_access_token_for_session_key).
+                      with('mysessionkey').
+                      and_return({'access_token' => 'myaccesstoken',
+                                  'expires' => 5000})
+        Mogli::Authenticator.should_receive(:new).and_return(authenticator)
         client = Mogli::Client.create_from_session_key(
                    'mysessionkey', '123456', 'secret')
-      }.should_not raise_exception(NoMethodError, /nil/)
+        client.access_token.should == 'myaccesstoken'
+        client.expiration.should == Time.at(1270005000)
+      end
+
+      it "allows creating and authenticating as an application" do
+        authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
+        authenticator.should_receive(:get_access_token_for_application).
+                      and_return("123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo")
+        Mogli::Authenticator.should_receive(:new).and_return(authenticator)
+        client = Mogli::Client.create_and_authenticate_as_application(
+                   'mysessionkey', '123456')
+        client.access_token.should == '123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo'
+      end
+
+      it "doesn't bail when the session key is stale" do
+        Time.stub!(:now).and_return(1270000000)
+        authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
+        authenticator.should_receive(:get_access_token_for_session_key).
+                      with('mysessionkey').
+                      and_return(nil)
+        Mogli::Authenticator.should_receive(:new).and_return(authenticator)
+        lambda {
+          client = Mogli::Client.create_from_session_key(
+                     'mysessionkey', '123456', 'secret')
+        }.should_not raise_exception(NoMethodError, /nil/)
+      end
+
+      it "treats missing expiries as nonexpiring access tokens" do
+        Time.stub!(:now).and_return(1270000000)
+        authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
+        authenticator.should_receive(:get_access_token_for_session_key).
+                      with('mysessionkey').
+                      and_return({'access_token' => 'myaccesstoken'})
+        Mogli::Authenticator.should_receive(:new).and_return(authenticator)
+        client = Mogli::Client.create_from_session_key(
+                   'mysessionkey', '123456', 'secret')
+        client.expiration.should == Time.at(Time.now + 10*365*24*60*60)
+      end
     end
 
     it "sets the access_token into the default params" do

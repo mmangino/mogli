@@ -86,10 +86,15 @@ module Mogli
 
     def self.create_from_session_key(session_key, client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
+
       access_data =
         authenticator.get_access_token_for_session_key(session_key) || {}
-      new(access_data['access_token'],
-          Time.now.to_i + access_data['expires'].to_i)
+
+      expires = if access_data['expires']
+        Time.now.to_i + access_data['expires'].to_i
+      end
+
+      new(access_data['access_token'], expires)
     end
     
     def self.create_and_authenticate_as_application(client_id, secret)
