@@ -14,6 +14,10 @@ module Mogli
     has_association :links, "Link"
     has_association :statuses, "Status"
 
+    def image_url
+      "https://graph.facebook.com/#{id}/picture"
+    end
+
     def to_s
       name
     end

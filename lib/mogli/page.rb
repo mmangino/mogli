@@ -12,24 +12,20 @@ module Mogli
     # Musicians
     define_properties :record_label, :hometown, :band_members, :genre
     
-	# When "/me/accounts" returns Page with 'access_token', this Page can be
-	# impersonated by an application.  The expiration value must be taken from
-	# the caller object (e.g., User) so as to uphold the original permissions.
-	def initialize(hash = {}, client = nil)
-		super(hash, client)
-		unless(access_token.blank?)
-			if(client.blank?)
-				self.client = Mogli::Client.new(access_token)
-			else
-				self.client =
-				Mogli::Client.new(access_token, client.expiration)
-			end
-		end
-	end
-
+  	def client_for_page
+  	  if access_token.blank?
+  	    raise MissingAccessToken.new("You can only get a client for this page if an access_token has been provided. i.e. via /me/accounts")
+      end
+      Client.new(access_token)
+    end
+  
     def self.recognize?(hash)
       hash.has_key?("category")
     end
+
+    class MissingAccessToken < Exception
+    end
     
   end
+  
 end

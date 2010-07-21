@@ -24,5 +24,6 @@ module Mogli
     has_association :television, "Television"
     has_association :likes, "Page"
     has_association :home, "Post"
+    has_association :accounts, "Page"
   end
 end
