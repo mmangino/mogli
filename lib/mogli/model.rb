@@ -1,5 +1,8 @@
 module Mogli
   class Model < Hashie::Dash
+    
+    attr_accessor :type
+    
     def client=(val)
       @client=val
     end

@@ -102,15 +102,15 @@ module Mogli
     end
 
     def create_instance(klass,data)
-      klass = determine_class(klass,data)
-      if klass.nil?
+      klass_to_create =  determine_class(data["type"]||klass,data)
+      if klass_to_create.nil?
         raise UnrecognizeableClassError.new("unable to recognize klass for #{klass.inspect} => #{data.inspect}")
       end
-      klass.new(data,self)
+      klass_to_create.new(data,self)
     end
 
     def constantize_string(klass)
-      klass.is_a?(String) ? Mogli.const_get(klass) : klass
+      klass.is_a?(String) ? Mogli.const_get(klass.capitalize) : klass
     end
 
     def determine_class(klass_or_klasses,data)
