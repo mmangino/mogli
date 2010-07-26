@@ -5,7 +5,7 @@ module Mogli
       :description, :source, :icon, :attribution, :actions, :likes,
       :created_time, :updated_time, :privacy
     
-    creation_properties :message, :picture, :link, :name, :description, :caption
+    creation_properties :message, :picture, :link, :name, :description, :caption, :source
         
     hash_populating_accessor :actions, "Action"
     hash_populating_accessor :comments, "Comment"
