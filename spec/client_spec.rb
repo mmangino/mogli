@@ -68,6 +68,7 @@ describe Mogli::Client do
 
   end
 
+
   describe "Making requests" do
     it "posts with the parameters in the body" do
       Mogli::Client.should_receive(:post).with("https://graph.facebook.com/1/feed",:body=>{:message=>"message",:access_token=>"1234"})
@@ -98,6 +99,39 @@ describe Mogli::Client do
     client.delete("1")
   end
 
+
+  describe "fql queries" do 
+    it "defaults to json" do
+      Mogli::Client.should_receive(:post).with("https://api.facebook.com/method/fql.query",:body=>{:query=>"query",:format=>"json",:access_token=>"1234"})
+      client = Mogli::Client.new("1234")
+      client.fql_query("query")
+    end
+
+    it "supports xml" do 
+      Mogli::Client.should_receive(:post).with("https://api.facebook.com/method/fql.query",:body=>{:query=>"query",:format=>"xml",:access_token=>"1234"})
+      client = Mogli::Client.new("1234")
+      client.fql_query("query",nil,"xml")  
+    end
+
+    it "creates objects if given a class" do
+      Mogli::Client.should_receive(:post).and_return({"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
+      client = Mogli::Client.new("1234")
+      client.fql_query("query","user").should be_an_instance_of(Mogli::User)
+    end
+
+    it "returns a hash if no class is given" do
+      Mogli::Client.should_receive(:post).and_return({"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
+      client = Mogli::Client.new("1234")
+      client.fql_query("query").should be_an_instance_of(Hash)
+    end
+    
+    it "doesn't create objects if the format is xml" do 
+      Mogli::Client.should_receive(:post).and_return({"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
+      client = Mogli::Client.new("1234")
+      client.fql_query("query","user","xml").should be_an_instance_of(Hash)    
+    end  
+  end
+  
   describe "result mapping" do
 
     let :user_data do

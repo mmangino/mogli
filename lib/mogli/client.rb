@@ -16,6 +16,10 @@ module Mogli
       "https://graph.facebook.com/#{path}"
     end
 
+    def fql_path
+      "https://api.facebook.com/method/fql.query"
+    end
+
     def initialize(access_token = nil,expiration=nil)
       @access_token = access_token
       # nil expiration means extended access
@@ -52,6 +56,12 @@ module Mogli
 
     def delete(path)
       self.class.delete(api_path(path),:query=>default_params)
+    end
+
+    def fql_query(query,klass=nil,format="json")
+      data = self.class.post(fql_path,:body=>default_params.merge({:query=>query,:format=>format}))
+      return data unless format=="json"
+      map_data(data,klass)
     end
 
     def get_and_map(path,klass=nil,body_args = {})
