@@ -3,7 +3,7 @@ module Mogli
         
     define_properties :id, :to, :message, :picture, :link, :name, :caption, 
       :description, :source, :icon, :attribution, :actions, :likes,
-      :created_time, :updated_time, :privacy
+      :created_time, :updated_time, :privacy, :type
     
     creation_properties :message, :picture, :link, :name, :description, :caption, :source
         

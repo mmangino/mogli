@@ -90,12 +90,6 @@ describe Mogli::Client do
       result.should == Mogli::Post.new(:id=>123434)
     end
     
-    it "returns items based on the type parameter if one exists" do
-      Mogli::Client.should_receive(:post).and_return({:id=>123434,"type"=>"status"})
-      client = Mogli::Client.new("1234")
-      result = client.post("1/feed","Post",:message=>"message")
-      result.should == Mogli::Status.new(:id=>123434)
-    end
   end
 
   it "allows deleting" do
@@ -194,8 +188,8 @@ describe Mogli::Client do
         client.create_instance("User",{:id=>1}).should be_an_instance_of(Mogli::User)
       end
       
-      it "will use the value from the type field if it exists" do
-        client.create_instance("User",{:id=>1,"type"=>"status"}).should be_an_instance_of(Mogli::Status)
+      it "will NOT use the value from the type field if it exists" do
+        client.create_instance("Post",{:id=>1,"type"=>"status"}).should be_an_instance_of(Mogli::Post)
       end
 
       it "call the recognize method on each class passing the data and will use the one that recognizes it" do

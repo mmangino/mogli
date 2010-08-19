@@ -102,7 +102,7 @@ module Mogli
     end
 
     def create_instance(klass,data)
-      klass_to_create =  determine_class(data["type"]||klass,data)
+      klass_to_create =  determine_class(klass,data)
       if klass_to_create.nil?
         raise UnrecognizeableClassError.new("unable to recognize klass for #{klass.inspect} => #{data.inspect}")
       end
