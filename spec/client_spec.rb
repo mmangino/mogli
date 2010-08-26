@@ -81,7 +81,7 @@ describe Mogli::Client do
       client = Mogli::Client.new("1234")
       lambda do
         result = client.post("1/feed","Post",:message=>"message")
-      end.should raise_error
+      end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
     end
 
     it "creates objects of the returned type" do
@@ -90,7 +90,7 @@ describe Mogli::Client do
       result = client.post("1/feed","Post",:message=>"message")
       result.should == Mogli::Post.new(:id=>123434)
     end
-    
+
   end
 
   it "allows deleting" do
@@ -124,14 +124,14 @@ describe Mogli::Client do
       client = Mogli::Client.new("1234")
       client.fql_query("query").should be_an_instance_of(Hash)
     end
-    
+
     it "doesn't create objects if the format is xml" do 
       Mogli::Client.should_receive(:post).and_return({"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
       client = Mogli::Client.new("1234")
       client.fql_query("query","user","xml").should be_an_instance_of(Hash)    
-    end  
+    end
   end
-  
+
   describe "result mapping" do
 
     let :user_data do
@@ -145,7 +145,6 @@ describe Mogli::Client do
     it "returns the array if no class is specified and there is only a data parameter" do
       client.map_data({"data"=>[user_data,user_data]}).should be_kind_of(Array)
     end
-
 
     it "creates an instance of the class when specified" do
       user = client.map_data(user_data,Mogli::User)
@@ -202,26 +201,18 @@ describe Mogli::Client do
       client.get_and_map(148800401968,"User").should be_nil
     end
 
-    it "raises an exception when there is just an error" do
+    it "raises an exception with specific message when there is just an error" do
       lambda do
         client.map_data({"error"=>{"type"=>"OAuthAccessTokenException","message"=>"An access token is required to request this resource."}})
-      end.should raise_error
+      end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
     end
 
-    it "should set the message on the exception" do
-      begin
-        client.map_data({"error"=>{"type"=>"OAuthAccessTokenException","message"=>"An access token is required to request this resource."}})
-        fail "Exception not raised!"
-      rescue Exception => e
-        e.message.should == "OAuthAccessTokenException: An access token is required to request this resource."
-      end
-    end
 
     describe "Instance creation" do
       it "will find the class in the Mogli namespace if given a string" do
         client.create_instance("User",{:id=>1}).should be_an_instance_of(Mogli::User)
       end
-      
+
       it "will NOT use the value from the type field if it exists" do
         client.create_instance("Post",{:id=>1,"type"=>"status"}).should be_an_instance_of(Mogli::Post)
       end
