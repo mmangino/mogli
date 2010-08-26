@@ -10,7 +10,10 @@ module Mogli
     include HTTParty
     include Mogli::Client::Event
     include Mogli::Client::User
+
     class UnrecognizeableClassError < Exception; end
+    class QueryParseException < Exception; end
+    class OAuthAccessTokenException < Exception; end
 
     def api_path(path)
       "https://graph.facebook.com/#{path}"
@@ -134,6 +137,7 @@ module Mogli
         if data.keys.size == 1 and data["error"]
           type = data["error"]["type"]
           message = data["error"]["message"]
+          raise Mogli::Client.const_get(type).new(message) if Mogli::Client.const_defined?(type)
           raise Exception.new("#{type}: #{message}")
         end
       end
