@@ -113,4 +113,44 @@ describe Mogli::Model do
     end
   end
 
+  describe "Finding" do
+
+    it "finds many models when id is an Array" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/", :query =>{ :ids => '1,2'}
+      ).and_return({
+        "1" => { :id => 1 }, "2" => { :id => 2 , :other_property => "Bob"}
+      })
+      users = TestModel.find([1,2])
+      users.size.should == 2
+      users.each {|user| user.should be_instance_of(TestModel)}
+      users[1].other_property.should == "Bob"
+    end
+
+    it "raises an exeption if id doesn't exists" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/123456", :query => {}
+      ).and_return({
+        "error"=> {"type"=>"QueryParseException", "message"=>"Some of the aliases you requested do not exist: 123456"}
+      })
+      lambda do
+        TestModel.find(123456)
+      end.should raise_error(Exception, "QueryParseException: Some of the aliases you requested do not exist: 123456")
+
+    end
+
+    it "raises an exception if one from many ids doesn't exists" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/", :query =>{ :ids => '1,123456'}
+      ).and_return({
+        "error"=> {"type"=>"QueryParseException", "message"=>"Some of the aliases you requested do not exist: 123456"}
+      })
+      lambda do
+        TestModel.find([1,123456])
+      end.should raise_error(Exception, "QueryParseException: Some of the aliases you requested do not exist: 123456")
+
+    end
+
+  end
+
 end

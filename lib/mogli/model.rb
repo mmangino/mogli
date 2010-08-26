@@ -105,6 +105,7 @@ module Mogli
 
     def self.find(id,client=nil, *fields)
       body_args = fields.empty? ? {} : {:fields => fields}
+      (id, body_args[:ids] = "", id.join(',')) if id.is_a?(Array)
       (client||Mogli::Client.new).get_and_map(id,self, body_args)
     end
   end
