@@ -122,7 +122,7 @@ describe Mogli::Model do
         "1" => { :id => 1 }, "2" => { :id => 2 , :other_property => "Bob"}
       })
       users = TestModel.find([1,2])
-      users.size.should == 2
+      users.should have(2).elements
       users.each {|user| user.should be_instance_of(TestModel)}
       users[1].other_property.should == "Bob"
     end
@@ -135,7 +135,7 @@ describe Mogli::Model do
       })
       lambda do
         TestModel.find(123456)
-      end.should raise_error(Exception, "QueryParseException: Some of the aliases you requested do not exist: 123456")
+      end.should raise_error(Mogli::Client::QueryParseException, "Some of the aliases you requested do not exist: 123456")
 
     end
 
@@ -147,7 +147,7 @@ describe Mogli::Model do
       })
       lambda do
         TestModel.find([1,123456])
-      end.should raise_error(Exception, "QueryParseException: Some of the aliases you requested do not exist: 123456")
+      end.should raise_error(Mogli::Client::QueryParseException, "Some of the aliases you requested do not exist: 123456")
 
     end
 
