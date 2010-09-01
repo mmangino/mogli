@@ -98,7 +98,7 @@ describe Mogli::Model do
     model.doesnt_exist=1
   end
 
-  it "should doesn't emit warning if the property exists as an association" do
+  it "doesn't emit warning if the property exists as an association" do
     model.should_not_receive(:warn_about_invalid_property)
     model.comments = []
   end

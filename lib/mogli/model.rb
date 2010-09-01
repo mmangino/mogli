@@ -36,7 +36,7 @@ module Mogli
     def method_missing(method, *args)
       method_as_s = method.to_s
       if method_as_s.to_s[-1].chr == "="
-        warn_about_invalid_property(method_as_s.chop) if !methods.include?(method_as_s.to_s.split('=')[0])
+        warn_about_invalid_property(method_as_s.chop) if !methods.include?(method_as_s.split('=')[0])
       else
         super
       end
