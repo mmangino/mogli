@@ -98,6 +98,11 @@ describe Mogli::Model do
     model.doesnt_exist=1
   end
 
+  it "should doesn't emit warning if the property exists as an association" do
+    model.should_not_receive(:warn_about_invalid_property)
+    model.comments = []
+  end
+
   describe "Fetching" do
 
     it "fetches data for a model with an id " do

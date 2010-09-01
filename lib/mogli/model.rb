@@ -35,12 +35,15 @@ module Mogli
 
     def method_missing(method, *args)
       method_as_s = method.to_s
-      if method_as_s.to_s[-1].chr == "="
-        warn_about_invalid_property(method_as_s.chop)
-      else
-        super
+      if !methods.include?(method_as_s.to_s.split('=')[0])
+        if method_as_s.to_s[-1].chr == "="
+          warn_about_invalid_property(method_as_s.chop)
+        else
+          super
+        end
       end
     end
+
     def warn_about_invalid_property(property)
       puts "Warning: property #{property} doesn't exist for class #{self.class.name}"
     end
