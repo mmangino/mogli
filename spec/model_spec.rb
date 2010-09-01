@@ -88,6 +88,11 @@ describe Mogli::Model do
     model.all_property_with_sample.should == "all values"
   end
 
+  it "has a create method on associations with samples" do
+    mock_client.stub!(:post)
+    model.property_with_sample_create(Mogli::Comment.new)
+  end
+
   it "allows deleting the post" do
     mock_client.should_receive(:delete).with(1)
     model.destroy
