@@ -8,7 +8,7 @@ module Mogli
     creation_properties :message, :picture, :link, :name, :description, :caption, :source
         
     hash_populating_accessor :actions, "Action"
-    has_association :comments, "Comment"
+    has_association_with_sample :comments, "Comment"
     hash_populating_accessor :from, "User"
     
     def likes_create

@@ -3,6 +3,7 @@ class TestModel < Mogli::Model
   define_properties :id, :other_property
   creation_properties :other_property
   has_association :comments, "Comment"
+  has_association_with_sample :property_with_sample, "Comment"
 
   hash_populating_accessor :from, "User"
   hash_populating_accessor :activities, "Activity"
@@ -73,6 +74,20 @@ describe Mogli::Model do
     model.activities.first.client.should == mock_client
   end
 
+  it "provides a sample of results in a hash array if available" do
+    model.property_with_sample = {"data"=>[{"id"=>1,"message"=>"Hello World"}, {"id"=>2,"message"=>"Goodbye Cruel World"}]}
+    sample_values = model.sample_property_with_sample
+    sample_values.should have(2).things
+    sample_values.each {|c| c.should be_an_instance_of(Mogli::Comment)}
+    sample_values.first.id.should == 1
+    sample_values.first.client.should == mock_client
+  end
+
+  it "provides all the results if requested" do
+    mock_client.should_receive(:get_and_map).with("1/property_with_sample","Comment", {}).and_return("all values")
+    model.all_property_with_sample.should == "all values"
+  end
+
   it "allows deleting the post" do
     mock_client.should_receive(:delete).with(1)
     model.destroy
@@ -96,11 +111,6 @@ describe Mogli::Model do
   it "emits warnings when properties that don't exist are written to" do
     model.should_receive(:warn_about_invalid_property).with("doesnt_exist")
     model.doesnt_exist=1
-  end
-
-  it "doesn't emit warning if the property exists as an association" do
-    model.should_not_receive(:warn_about_invalid_property)
-    model.comments = []
   end
 
   describe "Fetching" do

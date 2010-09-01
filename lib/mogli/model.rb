@@ -36,7 +36,7 @@ module Mogli
     def method_missing(method, *args)
       method_as_s = method.to_s
       if method_as_s.to_s[-1].chr == "="
-        warn_about_invalid_property(method_as_s.chop) if !methods.include?(method_as_s.split('=')[0])
+        warn_about_invalid_property(method_as_s.chop)
       else
         super
       end
@@ -69,7 +69,21 @@ module Mogli
       end
 
       add_creation_method(method_name,klass)
+    end
 
+    def self.has_association_with_sample(method_name, klass)
+      hash_populating_accessor(method_name, klass)
+      define_method "sample_#{method_name}" do
+        instance_variable_get "@#{method_name}"
+      end
+      define_method "all_#{method_name}" do |*fields|
+        body_args = fields.empty? ? {} : {:fields => fields}
+        if (ret=instance_variable_get("@all_#{method_name}")).nil?
+          ret = client.get_and_map("#{id}/#{method_name}",klass, body_args)
+          instance_variable_set("@all_#{method_name}",ret)
+        end
+        return ret
+      end
     end
 
     def self.add_creation_method(name,klass)
