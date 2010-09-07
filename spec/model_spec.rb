@@ -1,5 +1,6 @@
 require "spec_helper"
 class TestModel < Mogli::Model
+  set_search_type :test_model
   define_properties :id, :other_property
   creation_properties :other_property
   has_association :comments, "Comment"
@@ -149,6 +150,52 @@ describe Mogli::Model do
         TestModel.find([1,123456])
       end.should raise_error(Mogli::Client::QueryParseException, "Some of the aliases you requested do not exist: 123456")
 
+    end
+
+  end
+
+  describe "Searching" do
+
+
+    it "search for graph resources if specific class defined search type" do
+      client = Mogli::Client.new('123');
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/search", :query => {:q=> "s", :type => 'test_model', :access_token => "123"}
+      ).and_return({
+        'data' => [{'id' => 1, 'other_property' => "Test"}]
+      })
+      results = TestModel.search('s',client)
+      results.class.should == Mogli::FetchingArray
+      results.first.id.should == 1
+    end
+
+    it "search in all resource types when searching in Mogli::Model" do
+      client = Mogli::Client.new('123');
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/search", :query => {:q=> "s", :access_token => "123"}
+      ).and_return({
+        'data' => [{'id' => 1, 'message' => "status!", 'type' => "status"},
+        {'id' => 2, 'email' => "bob@example.org", 'type' => "user"}
+      ]})
+      results = Mogli::Model.search('s',client)
+      results.map(&:class).sort_by(&:to_s).should == [Mogli::Status, Mogli::User]
+    end
+
+    it "raise access token error if client is not defined" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/search", :query => {:q=> "s", :type => 'user'}
+      ).and_return({
+        "error"=> {"type"=>"OAuthUnauthorizedClientException", "message"=>"An access token is required to request this resource."}
+      })
+      lambda {
+        Mogli::User.search('s')
+      }.should raise_error(Mogli::Client::OAuthUnauthorizedClientException, "An access token is required to request this resource.")
+    end
+
+    it "raise error if class doesn't define search type" do
+      lambda {
+        Mogli::Album.search("Joe")
+      }.should raise_error(NoMethodError, "Can't search for Mogli::Album")
     end
 
   end

@@ -14,6 +14,7 @@ module Mogli
     class UnrecognizeableClassError < Exception; end
     class QueryParseException < Exception; end
     class OAuthAccessTokenException < Exception; end
+    class OAuthUnauthorizedClientException < Exception; end
 
     def api_path(path)
       "https://graph.facebook.com/#{path}"
@@ -128,6 +129,7 @@ module Mogli
     end
 
     def determine_class(klass_or_klasses,data)
+      return constantize_string(data['type']) if data.key?('type') && klass_or_klasses == Mogli::Model
       klasses = Array(klass_or_klasses).map { |k| constantize_string(k)}
       klasses.detect {|klass| klass.recognize?(data)} || klasses.first
     end
