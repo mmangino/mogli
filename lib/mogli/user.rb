@@ -1,21 +1,21 @@
-
 module Mogli
   class User < Profile
-    
+    set_search_type
+
     define_properties :first_name, :last_name, :link, :about, :birthday, :gender,
           :email, :website, :timezone, :updated_time, :verified, :political, :relationship_status, :locale
-    
+
     def self.recognize?(hash)
       !hash.has_key?("category")
     end
-    
+
     hash_populating_accessor :work, "Work"
     hash_populating_accessor :education, "Education"
-    
+
     hash_populating_accessor :location, "Page"
     hash_populating_accessor :hometown, "Page"
 
-    has_association :activities,"Activity"
+    has_association :activities, "Activity"
     has_association :friends, "User"
     has_association :interests, "Interest"
     has_association :music, "Music"

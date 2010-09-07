@@ -1,8 +1,13 @@
+require 'mogli/model/search'
+
 module Mogli
   class Model < Hashie::Dash
-    
+    extend Mogli::Model::Search
+
+    set_search_type :all
+
     attr_accessor :type
-    
+
     def client=(val)
       @client=val
     end
@@ -108,5 +113,8 @@ module Mogli
       (id, body_args[:ids] = "", id.join(',')) if id.is_a?(Array)
       (client||Mogli::Client.new).get_and_map(id,self, body_args)
     end
+
   end
 end
+
+

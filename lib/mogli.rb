@@ -1,5 +1,5 @@
 module Mogli
-  
+
 end
 
 require "httparty"
