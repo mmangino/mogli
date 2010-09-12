@@ -1,4 +1,5 @@
 
+*) move all model related tests to model_spec.rb
 *) handle picture attributes
 *) allow embedding into other classes, example:
 

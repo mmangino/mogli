@@ -11,22 +11,7 @@ describe Mogli::User do
     mock("client")
   end
   
-  it "allow setting the client" do
-    user = Mogli::User.new
-    user.client = "client"
-    user.client.should == "client"
-  end
-  
-  it "have an activities attribute which fetches when called" do
-    mock_client.should_receive(:get_and_map).with("1/activities","Activity").and_return("activities")
-    user_1.activities.should == "activities"
-  end
-  
-  it "only fetch activities once" do
-    mock_client.should_receive(:get_and_map).once.with("1/activities","Activity").and_return([])
-    user_1.activities
-    user_1.activities
-  end
+
   
   it "won't recognize pages" do
     Mogli::User.recognize?("id"=>1,"name"=>"bob","category"=>"fdhsjkfsd")
@@ -36,29 +21,24 @@ describe Mogli::User do
     Mogli::User.recognize?("id"=>1,"name"=>"bob")    
   end
   
-  it "should emit warnings when properties that don't exist are written to" do
-    m=Mogli::User.new
-    m.should_receive(:warn_about_invalid_property).with("doesnt_exist")
-    m.doesnt_exist=1
-  end
   
-  describe "feed creation" do
-    before(:each) do
-      @user = Mogli::User.new(:id=>12345)
-      @client = mock(:client)
-      @user.client = @client
-      @client.stub!(:post)
-    end
+  describe "Finding" do
     
-    it "has a create method on feed" do
-      @user.feed_create(Mogli::Post.new)
-    end
-
-    it "posts the params to the client" do
-      @client.should_receive(:post).with("12345/feed","Post",:message=>"my message",:picture=>nil,:link=>nil,:name=>nil,:description=>nil)
-      @user.feed_create(Mogli::Post.new(:message=>"my message"))
+    it "finds optional fields for a user" do
+      Mogli::Client.should_receive(:get).with("https://graph.facebook.com/1",
+        :query=>{:fields => [:birthday, :gender]}).and_return({:id=>1, :birthday=>'09/15', :gender => 'male'})
+      user = Mogli::User.find(1, nil, :birthday, :gender)
+      user.birthday.should == '09/15'
+      user.gender.should == 'male'
     end
   
+    it "finds a user's friends with optional fields" do
+      mock_client.should_receive(:get_and_map).with(
+        "1/friends", "User", {:fields => [:birthday, :gender]}).and_return(
+        [Mogli::User.new(:id=>2, :birthday=>'09/15', :gender => 'male')])
+      friends = user_1.friends(:birthday, :gender)
+      friends.size.should == 1
+    end
   end
   
 end

@@ -11,9 +11,10 @@ Add config.gem "mogli" to environment.rb
 For Rails: create a controller like the following:
 
 class OauthController < ApplicationController
+
   def new
-    session[:access_token]=nil
-    redirect_to authenticator.authorize_url
+    session[:at]=nil
+    redirect_to authenticator.authorize_url(:scope => 'publish_stream', :display => 'page')
   end
   
   def create    
