@@ -1,7 +1,7 @@
 module Mogli
   class Event < Model
-    define_properties :id, :name, :description, :start_time, :end_time, :location, :privacy, :updated_time
-    creation_properties :start_time, :end_time, :name, :description, :privacy
+    define_properties :start_time, :end_time, :name
+    creation_properties :start_time, :end_time, :name
     
     hash_populating_accessor :venue, "Address"
     hash_populating_accessor :owner, "User", "Page"
