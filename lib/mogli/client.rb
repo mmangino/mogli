@@ -37,7 +37,7 @@ module Mogli
       parts = post_data.split("&")
       hash = {}
       parts.each do |p| (k,v) = p.split("=")
-        hash[k]=v
+        hash[k]=CGI.unescape(v)
       end
       new(hash["access_token"],hash["expires"].to_s.to_i)
     end
