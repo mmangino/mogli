@@ -53,15 +53,15 @@ describe Mogli::Client do
       client.default_params.should == {}
     end
 
-    it "create get access token from an authenticator and code" do
-      Mogli::Client.should_receive(:get).with("url").and_return("access_token=114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU.&expires=4168")
+    it "create get an unescaped access token from an authenticator and code" do
+      Mogli::Client.should_receive(:get).with("url").and_return("access_token=114355055262088%7C2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU.&expires=4168")
       client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
       client.access_token.should == "114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU."
       client.expiration.should_not be_nil
     end
 
     it "create set the expiration into the future if there is on param" do
-      Mogli::Client.should_receive(:get).with("url").and_return("access_token=114355055262088|2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU.")
+      Mogli::Client.should_receive(:get).with("url").and_return("access_token=114355055262088%7C2.6_s8VD_HRneAq3_tUEHJhA__.3600.1272920400-12451752|udZzWly7ptI7IMgX7KTdzaoDrhU.")
       client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
       (client.expiration > Time.now+365*24*60*60).should be_true
     end
