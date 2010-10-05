@@ -5,8 +5,7 @@ module Mogli
     define_properties :first_name, :last_name, :link, :about, :birthday, :gender,
           :email, :website, :timezone, :updated_time, :verified, :political, 
           :relationship_status, :locale, :religion, :quotes
-    
->>>>>>> ce16930... Added religion and quotes to User
+
     def self.recognize?(hash)
       !hash.has_key?("category")
     end
