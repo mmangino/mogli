@@ -66,6 +66,17 @@ describe Mogli::Client do
       (client.expiration > Time.now+365*24*60*60).should be_true
     end
 
+    it "create throw exception if facebook returns exception" do
+      err_msg = "Some message"
+      err_type = "ErrorType"
+      Mogli::Client.should_receive(:get).with("url").and_return(HTTParty::Response.new(Struct.new(:body,:to_hash).new,{"error"=>{"type"=>err_type,"message"=>err_msg}}))
+      begin 
+        client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
+      rescue Exception => e
+        e.message.should == "#{err_type}: #{err_msg}"
+      end
+    end
+
   end
 
 
