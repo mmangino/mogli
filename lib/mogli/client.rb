@@ -40,6 +40,12 @@ module Mogli
 
     def self.create_from_code_and_authenticator(code,authenticator)
       post_data = get(authenticator.access_token_url(code))
+      if ((post_data.class.to_s == "HTTParty::Response") && post_data.parsed_response.kind_of?(Hash) && !post_data.parsed_response["error"].blank?)
+          type = post_data["error"]["type"]
+          message = post_data["error"]["message"]
+          raise Mogli::Client.const_get(type).new(message) if Mogli::Client.const_defined?(type)
+          raise Exception.new("#{type}: #{message}")
+      end        
       parts = post_data.split("&")
       hash = {}
       parts.each do |p| (k,v) = p.split("=")
