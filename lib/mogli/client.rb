@@ -15,6 +15,7 @@ module Mogli
     class QueryParseException < Exception; end
     class OAuthAccessTokenException < Exception; end
     class OAuthUnauthorizedClientException < Exception; end
+    class OAuthException < Exception; end
 
     def api_path(path)
       "https://graph.facebook.com/#{path}"
