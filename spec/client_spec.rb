@@ -213,11 +213,6 @@ describe Mogli::Client do
       end.should raise_error(Mogli::Client::OAuthException, "Error validating access token.")
     end
 
-    it "raises a generic ClientException when the exception type is not recorgnized" do
-      lambda do
-        client.map_data({"error"=>{"type"=>"Foo","message"=>"Lorem ipsum."}})
-      end.should raise_error(Mogli::Client::ClientException, "Foo: Lorem ipsum.")
-    end
 
     describe "Instance creation" do
       it "will find the class in the Mogli namespace if given a string" do
