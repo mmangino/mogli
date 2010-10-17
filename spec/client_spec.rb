@@ -207,12 +207,6 @@ describe Mogli::Client do
       end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
     end
 
-    it "raises a OAuthException when a token is invalidated by a user logging out of Facebook" do
-      lambda do
-        client.map_data({"error"=>{"type"=>"OAuthException","message"=>"Error validating access token."}})
-      end.should raise_error(Mogli::Client::OAuthException, "Error validating access token.")
-    end
-
 
     describe "Instance creation" do
       it "will find the class in the Mogli namespace if given a string" do
