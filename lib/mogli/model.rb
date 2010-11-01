@@ -25,7 +25,21 @@ module Mogli
       post_params = {}
       self.class.creation_keys.each do |key|
         post_params[key] = self[key]
+
+        # make sure actions and any other creation_properties that aren't just
+        # hash entries get added...
+        if post_params[key].nil? &&
+           self.respond_to?(key.to_sym) && !self.send(key.to_sym).nil?
+
+          val = self.send(key.to_sym)
+          post_params[key] = if val.is_a?(Mogli::Model)
+                               val.post_params.to_json
+                             else
+                               val.to_json
+                             end
+        end
       end
+
       post_params
     end
 
@@ -100,7 +114,7 @@ module Mogli
 
     def fetch()
       raise ArgumentError.new("You cannot fetch models without a populated id attribute") if id.nil?
-      other = self.class.find(id,client) 
+      other = self.class.find(id,client)
       merge!(other) if other
     end
 
@@ -116,5 +130,3 @@ module Mogli
 
   end
 end
-
-
