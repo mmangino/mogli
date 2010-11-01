@@ -1,12 +1,13 @@
 require "spec_helper"
 class TestModel < Mogli::Model
   set_search_type :test_model
-  define_properties :id, :other_property
-  creation_properties :other_property
+  define_properties :id, :other_property, :actions
+  creation_properties :other_property, :actions
   has_association :comments, "Comment"
 
   hash_populating_accessor :from, "User"
   hash_populating_accessor :activities, "Activity"
+  hash_populating_accessor :actions, "Action"
 end
 
 
@@ -29,12 +30,12 @@ describe Mogli::Model do
     user.client.should == "client"
   end
 
-  it "has a define proeprties method" do
+  it "has a define properties method" do
     model.respond_to?(:id).should be_true
     model.respond_to?(:other_property).should be_true
   end
 
-  it "have an comments attribute which fetches when called" do
+  it "have a comments attribute which fetches when called" do
     mock_client.should_receive(:get_and_map).with("1/comments","Comment", {}).and_return("comments")
     model.comments.should == "comments"
   end
@@ -85,18 +86,39 @@ describe Mogli::Model do
     model.should be_frozen
   end
 
-  it "knows which attributes are posted" do
-    TestModel.new(:id=>1,:other_property=>2).post_params.should == {:other_property=>2}
-  end
-
-  it "will allow updating status with no object" do
-    mock_client.should_receive(:post).once.with("1/comments",nil,{}).and_return([])
-    model.comments_create
-  end
-
   it "emits warnings when properties that don't exist are written to" do
     model.should_receive(:warn_about_invalid_property).with("doesnt_exist")
     model.doesnt_exist=1
+  end
+
+  describe "Posting" do
+    it "knows which properties are posted" do
+      TestModel.new(:id=>1,:other_property=>2).post_params.keys.should == TestModel.creation_keys
+    end
+
+    it "includes regular hash properties for posting" do
+      TestModel.new(:id=>1,:other_property=>2).post_params[:other_property].should == 2
+    end
+
+    it "includes associated properties for posting" do
+      actions_data = {:name => 'Action Name', :link => 'http://example.com'}
+      new_model = TestModel.new(:id=>1,:other_property=>2,:actions => [Mogli::Action.new(actions_data)])
+      new_model.post_params[:actions].should == "[{\"name\":\"Action Name\",\"link\":\"http://example.com\"}]"
+    end
+
+    it "includes associated properties for posting even if Array doesn't have to_json method" do
+      actions_data = {:name => 'Action Name', :link => 'http://example.com'}
+      actions_data_array = [Mogli::Action.new(actions_data)]
+      actions_data_array.should_receive(:respond_to?).with(:to_json).and_return(false)
+
+      new_model = TestModel.new(:id=>1,:other_property=>2,:actions => actions_data_array)
+      new_model.post_params[:actions].should == "[{\"name\":\"Action Name\",\"link\":\"http://example.com\"}]"
+    end
+
+    it "will allow updating status with no object" do
+      mock_client.should_receive(:post).once.with("1/comments",nil,{}).and_return([])
+      model.comments_create
+    end
   end
 
   describe "Fetching" do
