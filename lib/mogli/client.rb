@@ -40,11 +40,8 @@ module Mogli
 
     def self.create_from_code_and_authenticator(code,authenticator)
       post_data = get(authenticator.access_token_url(code))
-      if ((post_data.class.to_s == "HTTParty::Response") && post_data.parsed_response.kind_of?(Hash) && !post_data.parsed_response["error"].blank?)
-          type = post_data["error"]["type"]
-          message = post_data["error"]["message"]
-          raise Mogli::Client.const_get(type).new(message) if Mogli::Client.const_defined?(type)
-          raise Exception.new("#{type}: #{message}")
+      if (response_is_error?(post_data))
+        raise_client_exception(post_data)
       end        
       parts = post_data.split("&")
       hash = {}
@@ -52,6 +49,22 @@ module Mogli
         hash[k]=CGI.unescape(v)
       end
       new(hash["access_token"],hash["expires"].to_s.to_i)
+    end
+    
+    def self.raise_client_exception(post_data)
+      type=post_data["error"]["type"]
+      message=post_data["error"]["message"]
+      if Mogli::Client.const_defined?(type)
+        raise Mogli::Client.const_get(type).new(message) 
+      else
+        raise ClientException.new("#{type}: #{message}")      
+      end
+    end
+    
+    def self.response_is_error?(post_data)
+      post_data.is_a?(HTTParty::Response) and
+       post_data.parsed_response.kind_of?(Hash) and
+       !post_data.parsed_response["error"].blank?
     end
 
     def self.create_from_session_key(session_key, client_id, secret)
