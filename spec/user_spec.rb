@@ -64,7 +64,7 @@ describe Mogli::User do
         permissions_list = $1
 
         Mogli::User::ALL_EXTENDED_PERMISSIONS.each do |perm|
-          query.should match /,?#{perm.to_s},?/
+          permissions_list.should match /,?#{perm.to_s},?/
         end
 
         @dummy_response # stubbed return val
