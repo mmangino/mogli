@@ -66,6 +66,19 @@ describe Mogli::Client do
       (client.expiration > Time.now+365*24*60*60).should be_true
     end
 
+    it "create throw exception if facebook returns exception" do
+      err_msg = "Some message"
+      err_type = "ErrorType"
+      response={"error"=>{"type"=>err_type,"message"=>err_msg}}
+      mock_response = mock("response",:parsed_response=>response,:is_a? => true,:[] => response["error"])
+      Mogli::Client.should_receive(:get).with("url").and_return(mock_response)
+      begin 
+        client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
+      rescue Exception => e
+        e.message.should == "#{err_type}: #{err_msg}"
+      end
+    end
+
   end
 
 
@@ -207,6 +220,17 @@ describe Mogli::Client do
       end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
     end
 
+    it "raises a OAuthException when a token is invalidated by a user logging out of Facebook" do
+      lambda do
+        client.map_data({"error"=>{"type"=>"OAuthException","message"=>"Error validating access token."}})
+      end.should raise_error(Mogli::Client::OAuthException, "Error validating access token.")
+    end
+
+    it "raises a generic ClientException when the exception type is not recorgnized" do
+      lambda do
+        client.map_data({"error"=>{"type"=>"Foo","message"=>"Lorem ipsum."}})
+      end.should raise_error(Mogli::Client::ClientException, "Foo: Lorem ipsum.")
+    end
 
     describe "Instance creation" do
       it "will find the class in the Mogli namespace if given a string" do
