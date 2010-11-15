@@ -70,8 +70,8 @@ module Mogli
     def self.create_from_session_key(session_key, client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
       access_data = authenticator.get_access_token_for_session_key(session_key)
-      new(access_data['access_token'],
-          Time.now.to_i + access_data['expires'].to_i)
+      new(access_data.first['access_token'],
+          Time.now.to_i + access_data.first['expires'].to_i)
     end
 
     def post(path,klass,body_args)
