@@ -17,6 +17,8 @@ module Mogli
     class OAuthAccessTokenException < ClientException; end
     class OAuthUnauthorizedClientException < ClientException; end
     class OAuthException < ClientException; end
+    # represents case that the facebook limit on posts to a feed has been exceeded
+    class FeedActionRequestLimitExceeded < ClientException; end
 
     def api_path(path)
       "https://graph.facebook.com/#{path}"
@@ -52,12 +54,16 @@ module Mogli
     end
     
     def self.raise_client_exception(post_data)
-      type=post_data["error"]["type"]
-      message=post_data["error"]["message"]
-      if Mogli::Client.const_defined?(type)
-        raise Mogli::Client.const_get(type).new(message) 
+      raise_error_by_type_and_message(post_data["error"]["type"], post_data["error"]["message"])
+    end
+
+    def self.raise_error_by_type_and_message(type, message)
+      if type == 'OAuthException' && message =~ /Feed action request limit reached/
+        raise FeedActionRequestLimitExceeded.new(message)
+      elsif Mogli::Client.const_defined?(type)
+        raise Mogli::Client.const_get(type).new(message)
       else
-        raise ClientException.new("#{type}: #{message}")      
+        raise ClientException.new("#{type}: #{message}")
       end
     end
     
@@ -158,10 +164,7 @@ module Mogli
     def raise_error_if_necessary(data)
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
-          type = data["error"]["type"]
-          message = data["error"]["message"]
-          raise Mogli::Client.const_get(type).new(message) if Mogli::Client.const_defined?(type)
-          raise ClientException.new("#{type}: #{message}")
+          self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
         end
       end
     end

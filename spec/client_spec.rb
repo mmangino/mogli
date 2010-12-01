@@ -104,6 +104,15 @@ describe Mogli::Client do
       result.should == Mogli::Post.new(:id=>123434)
     end
 
+    it "raises specific exception if Facebook-imposed posting limit exceeded for feed" do
+      error_message = "Feed action request limit reached"
+      Mogli::Client.should_receive(:post).and_return({"error"=>{"type"=>"OAuthException","message"=>error_message}})
+      client = Mogli::Client.new("1234")
+      lambda do
+        result = client.post("1/feed","Post",:message=>"message")
+      end.should raise_error(Mogli::Client::FeedActionRequestLimitExceeded, error_message)
+    end
+
   end
 
   it "allows deleting" do
