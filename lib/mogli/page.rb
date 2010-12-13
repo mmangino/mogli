@@ -5,7 +5,7 @@ module Mogli
     define_properties :id, :name, :category, :username, :access_token
 
     # General
-    define_properties :fan_count, :link, :picture, :has_added_app
+    define_properties :likes, :link, :picture, :has_added_app, :website
 
     # Retail
     define_properties :founded, :products, :mission, :company_overview
