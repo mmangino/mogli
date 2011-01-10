@@ -73,6 +73,12 @@ module Mogli
       new(access_data['access_token'],
           Time.now.to_i + access_data['expires'].to_i)
     end
+    
+    def self.create_and_authenticate_as_application(client_id, secret)
+      authenticator = Mogli::Authenticator.new(client_id, secret, nil)
+      access_data = authenticator.get_access_token_for_application
+      new(access_data)
+    end
 
     def post(path,klass,body_args)
       data = self.class.post(api_path(path),:body=>default_params.merge(body_args))

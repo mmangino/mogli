@@ -56,5 +56,20 @@ describe Mogli::Authenticator do
       get_access_token_for_session_key("mysessionkey").
       should == {"access_token" => "myaccesstoken", "expires" => 5000}
   end
+  
+  it "can ask for an application token" do
+    Mogli::Client.should_receive(:post).
+      with("https://graph.facebook.com/oauth/access_token",
+           :body=> {
+             :grant_type => 'client_credentials',
+             :client_id => "123456",
+             :client_secret => "secret"
+           }).
+      and_return(mock("response", :parsed_response=> "access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo",:is_a? => true))
+      
+      
+      token = authenticator.get_access_token_for_application
+      token.should =="123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo"
+  end
 
 end

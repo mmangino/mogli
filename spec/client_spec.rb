@@ -25,6 +25,16 @@ describe Mogli::Client do
       client.access_token.should == 'myaccesstoken'
       client.expiration.should == Time.at(1270005000)
     end
+    
+    it "allows creating and authenticating as an application" do
+      authenticator = Mogli::Authenticator.new('123456', 'secret', nil)
+      authenticator.should_receive(:get_access_token_for_application).
+                    and_return("123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo")
+      Mogli::Authenticator.should_receive(:new).and_return(authenticator)
+      client = Mogli::Client.create_and_authenticate_as_application(
+                 'mysessionkey', '123456')
+      client.access_token.should == '123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo'
+    end
 
     it "sets the access_token into the default params" do
       client = Mogli::Client.new("myaccesstoken")
