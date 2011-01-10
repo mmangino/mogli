@@ -30,6 +30,18 @@ module Mogli
                    :client_secret => secret,
                    :sessions => keystr})
     end
+    
+    def get_access_token_for_application
+      client = Mogli::Client.new
+      request = client.class.post(client.api_path('oauth/access_token'),
+        :body=> {
+          :grant_type => 'client_credentials',
+          :client_id => client_id,
+          :client_secret => secret
+        }
+      )
+      request.parsed_response.split('=').last
+  end
 
   end
 end
