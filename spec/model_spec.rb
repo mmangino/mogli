@@ -2,7 +2,7 @@ require "spec_helper"
 class TestModel < Mogli::Model
   set_search_type :test_model
   define_properties :id, :other_property, :actions
-  creation_properties :other_property, :actions
+  creation_properties :actions, :other_property
   has_association :comments, "Comment"
 
   hash_populating_accessor :from, "User"
