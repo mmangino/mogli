@@ -83,7 +83,9 @@ module Mogli
     def self.create_and_authenticate_as_application(client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
       access_data = authenticator.get_access_token_for_application
-      new(access_data)
+      client = AppClient.new(access_data)
+      client.application_id = client_id
+      client
     end
 
     def post(path,klass,body_args)
@@ -93,6 +95,11 @@ module Mogli
 
     def delete(path)
       self.class.delete(api_path(path),:query=>default_params)
+    end
+
+    def subscribe_to_model(model,options)
+      options_to_send=options.dup
+      self.class.post("http://")
     end
 
     def fql_query(query,klass=nil,format="json")
