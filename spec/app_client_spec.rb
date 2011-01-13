@@ -31,6 +31,11 @@ describe Mogli::AppClient do
       client.subscribe_to_model(Mogli::User,:callback_url=>"http://localhost:3000",:fields=>["username"],:verify_token=>"TOKEN")
       
     end
+    
+    it "Lists the existing subscriptions" do
+     a.should_receive(:get_and_map_url).with("http://graph.facebook.com/123/subscriptions","Subscription")
+     a.subscriptions
+    end
   end
 
 end

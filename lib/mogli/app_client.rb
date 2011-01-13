@@ -6,7 +6,7 @@ module Mogli
     attr_accessor :application_id
     
     def subscription_url
-      "http://graph.facebook.com/#{application_id}/subscriptions"
+      "https://graph.facebook.com/#{application_id}/subscriptions"
     end
     
     def subscribe_to_model(model,options)
@@ -18,6 +18,10 @@ module Mogli
     
     def name_for_class(klass)
       klass.name.split("::").last.downcase
+    end
+    
+    def subscriptions
+      get_and_map_url(subscription_url,"Subscription")
     end
   end
 end

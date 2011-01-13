@@ -114,8 +114,8 @@ module Mogli
       map_data(data,klass)
     end
 
-    def get_and_map_url(url,klass=nil)
-      data = self.class.get(url)
+    def get_and_map_url(url,klass=nil,body_args = {})
+      data = self.class.get(url,:query=>default_params.merge(body_args))
       map_data(data,klass)
     end
 
