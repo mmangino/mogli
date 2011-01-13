@@ -110,6 +110,9 @@ module Mogli
         end
         return ret
       end
+      define_method "#{name}=" do |value|
+        instance_variable_set("@#{name}",client.map_to_class(client.extract_hash_or_array(value,klass),klass))
+      end
 
       add_creation_method(name,klass)
     end

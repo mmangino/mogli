@@ -39,6 +39,14 @@ describe Mogli::Model do
     mock_client.should_receive(:get_and_map).with("1/comments","Comment", {}).and_return("comments")
     model.comments.should == "comments"
   end
+  
+  it "populates associations if available" do
+    model = TestModel.new("id"=>1, "comments"=>{"data"=>[{"id"=>1,"message"=>"first"},{"id"=>2,"message"=>"second"}]})
+    mock_client.should_receive(:get_and_map).never
+    model.comments.size.should == 2
+    model.comments.first.id.should == 1
+    model.comments.last.message.should == "second"
+  end
 
   it "only fetches activities once" do
     mock_client.should_receive(:get_and_map).once.with("1/comments","Comment", {}).and_return([])
