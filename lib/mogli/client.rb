@@ -41,7 +41,7 @@ module Mogli
     end
 
     def self.create_from_code_and_authenticator(code,authenticator)
-      post_data = get(authenticator.access_token_url(code))
+      post_data = get(authenticator.access_token_url(code)).parsed_response
       if (response_is_error?(post_data))
         raise_client_exception(post_data)
       end
@@ -68,9 +68,8 @@ module Mogli
     end
 
     def self.response_is_error?(post_data)
-      post_data.is_a?(HTTParty::Response) and
-       post_data.parsed_response.kind_of?(Hash) and
-       !post_data.parsed_response["error"].blank?
+       post_data.kind_of?(Hash) and
+       !post_data["error"].blank?
     end
 
     def self.create_from_session_key(session_key, client_id, secret)
