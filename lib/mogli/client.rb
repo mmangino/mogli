@@ -44,7 +44,7 @@ module Mogli
       post_data = get(authenticator.access_token_url(code))
       if (response_is_error?(post_data))
         raise_client_exception(post_data)
-      end        
+      end
       parts = post_data.split("&")
       hash = {}
       parts.each do |p| (k,v) = p.split("=")
@@ -52,7 +52,7 @@ module Mogli
       end
       new(hash["access_token"],hash["expires"].to_s.to_i)
     end
-    
+
     def self.raise_client_exception(post_data)
       raise_error_by_type_and_message(post_data["error"]["type"], post_data["error"]["message"])
     end
@@ -66,7 +66,7 @@ module Mogli
         raise ClientException.new("#{type}: #{message}")
       end
     end
-    
+
     def self.response_is_error?(post_data)
       post_data.is_a?(HTTParty::Response) and
        post_data.parsed_response.kind_of?(Hash) and
@@ -79,7 +79,7 @@ module Mogli
       new(access_data['access_token'],
           Time.now.to_i + access_data['expires'].to_i)
     end
-    
+
     def self.create_and_authenticate_as_application(client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
       access_data = authenticator.get_access_token_for_application
@@ -110,7 +110,6 @@ module Mogli
 
     def get_and_map(path,klass=nil,body_args = {})
       data = self.class.get(api_path(path),:query=>default_params.merge(body_args))
-      debugger
       data = data.values if body_args.key?(:ids) && !data.key?('error')
       map_data(data,klass)
     end
