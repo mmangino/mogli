@@ -3,7 +3,6 @@ module Mogli
 end
 
 require "httparty"
-require "hashie"
 
 
 require "mogli/authenticator"
