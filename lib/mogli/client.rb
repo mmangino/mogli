@@ -167,9 +167,13 @@ module Mogli
       end
       klass_to_create.new(data,self)
     end
+    
+    def capitalize_if_required(string)
+      string.downcase == string ? string.capitalize : string
+    end
 
     def constantize_string(klass)
-      klass.is_a?(String) ? Mogli.const_get(klass.capitalize) : klass
+      klass.is_a?(String) ? Mogli.const_get(capitalize_if_required(klass)) : klass
     end
 
     def determine_class(klass_or_klasses,data)
