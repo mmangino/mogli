@@ -110,14 +110,14 @@ describe Mogli::Model do
 
     it "includes associated properties for posting" do
       actions_data = {:name => 'Action Name', :link => 'http://example.com'}
-      new_model = TestModel.new(:id=>1,:other_property=>2,:actions => [Mogli::Action.new(actions_data)])
+      new_model = TestModel.new(:id=>1,:other_property=>2,:actions => [actions_data])
       new_model.post_params[:actions].should == "[{\"name\":\"Action Name\",\"link\":\"http://example.com\"}]"
     end
 
     it "includes associated properties for posting even if Array doesn't have to_json method" do
       actions_data = {:name => 'Action Name', :link => 'http://example.com'}
-      actions_data_array = [Mogli::Action.new(actions_data)]
-      actions_data_array.should_receive(:respond_to?).with(:to_json).and_return(false)
+      actions_data_array = [actions_data]
+      actions_data_array.stub!(:respond_to?).with(:to_json).and_return(false)
 
       new_model = TestModel.new(:id=>1,:other_property=>2,:actions => actions_data_array)
       new_model.post_params[:actions].should == "[{\"name\":\"Action Name\",\"link\":\"http://example.com\"}]"

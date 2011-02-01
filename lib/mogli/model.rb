@@ -1,7 +1,7 @@
 require 'mogli/model/search'
 
 module Mogli
-  class Model < Hashie::Dash
+  class Model  
     extend Mogli::Model::Search
 
     set_search_type :all
@@ -17,25 +17,25 @@ module Mogli
     end
 
     def initialize(hash={},client=nil)
+      @_values = {}
       self.client=client
-      super(hash||{})
+      hash.each do |k,v|
+        self.send("#{k}=",v)
+      end
     end
 
     def post_params
       post_params = {}
       self.class.creation_keys.each do |key|
-        post_params[key] = self[key]
+        post_params[key] =  @_values[key.to_s]
 
         # make sure actions and any other creation_properties that aren't just
         # hash entries get added...
-        if post_params[key].nil? &&
-           self.respond_to?(key.to_sym) && !self.send(key.to_sym).nil?
-
-          val = self.send(key.to_sym)
-          post_params[key] = if val.respond_to?(:to_json)
+        if post_params[key].nil? && self.respond_to?(key.to_sym) && !(val=self.send(key.to_sym)).nil?
+           post_params[key] = if val.is_a?(Array)
+                                "[#{val.map { |v| v.respond_to?(:to_json) ? v.to_json : nil }.compact.join(',')}]"  
+                             elsif val.respond_to?(:to_json)
                                val.to_json
-                             elsif val.is_a?(Array)
-                               "[#{val.map { |v| v.respond_to?(:to_json) ? v.to_json : nil }.compact.join(',')}]"
                              else
                                nil
                              end
@@ -65,6 +65,19 @@ module Mogli
     def warn_about_invalid_property(property)
       puts "Warning: property #{property} doesn't exist for class #{self.class.name}"
     end
+
+    def self.property(arg)
+      @properties ||= []
+      @properties << arg
+      define_method arg do
+        @_values[arg.to_s]
+      end
+      define_method "#{arg}=" do |val|
+        @_values[arg.to_s] = val
+      end
+    end
+    
+        
 
     def self.define_properties(*args)
       args.each do |arg|
@@ -122,7 +135,11 @@ module Mogli
       other = self.class.find(id,client)
       merge!(other) if other
     end
-
+    
+    def merge!(other)
+      @_values.merge!(other.instance_variable_get("@_values"))
+    end
+    
     def self.recognize?(data)
       true
     end
