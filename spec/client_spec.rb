@@ -194,19 +194,19 @@ describe Mogli::Client do
     end
 
     it "creates an array of instances when the data is just a hash with a single data parameter" do
-      users = client.map_data({"data"=>[user_data,user_data]},Mogli::User)
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{}},Mogli::User)
       users.should be_kind_of(Array)
       users.each {|i| i.should be_an_instance_of(Mogli::User) }
       users.size.should == 2
     end
 
     it "create an instance of fetching array when there is a data element" do
-      users = client.map_data({"data"=>[user_data,user_data]},Mogli::User)
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{}},Mogli::User)
       users.should be_an_instance_of(Mogli::FetchingArray)
     end
 
     it "sets the client on the array" do
-      users = client.map_data({"data"=>[user_data,user_data]},Mogli::User)
+      users = client.map_data({"data"=>[user_data,user_data],"paging"=>{}},Mogli::User)
       users.client.should == client
     end
 

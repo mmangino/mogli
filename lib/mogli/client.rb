@@ -131,8 +131,12 @@ module Mogli
       return nil if hash_or_array == false
       return hash_or_array if hash_or_array.nil? or hash_or_array.kind_of?(Array)
       hash_or_array = hash_or_array.parsed_response if hash_or_array.respond_to?(:parsed_response)
-      return extract_fetching_array(hash_or_array,klass) if hash_or_array.has_key?("data")
+      return extract_fetching_array(hash_or_array,klass) if is_fetching_array?(hash_or_array)
       return hash_or_array
+    end
+    
+    def is_fetching_array?(hash)
+      hash.has_key?("data") and hash["data"].instance_of?(Array)
     end
 
     def extract_fetching_array(hash,klass)
