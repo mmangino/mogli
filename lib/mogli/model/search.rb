@@ -1,5 +1,5 @@
 module Mogli
-  class Model < Hashie::Dash
+  class Model
     module Search
       attr_reader :search_type
 
