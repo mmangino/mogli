@@ -4,7 +4,7 @@ module Mogli
 
     define_properties :first_name, :last_name, :link, :about, :birthday, :gender,
           :email, :website, :timezone, :updated_time, :verified, :political, 
-          :relationship_status, :locale, :religion, :quotes, :third_party_id
+          :relationship_status, :locale, :religion, :quotes, :third_party_id, :location, :languages, :hometown, :education
 
     def self.recognize?(hash)
       !hash.has_key?("category")
@@ -26,6 +26,9 @@ module Mogli
     has_association :likes, "Page"
     has_association :home, "Post"
     has_association :accounts, "Page"
+    has_association :languages, "Page"
+    has_association :feed, "Post"
+    
 
     attr_reader :extended_permissions
 
