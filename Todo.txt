@@ -1,13 +1,3 @@
 
-*) move all model related tests to model_spec.rb
 *) handle picture attributes
-*) allow embedding into other classes, example:
 
-class User < ActiveRecord::Base
-  acts_as_ogli :id=>:facebook_id,:class=>Ogli::User
-end
-
-allows user.facebook.activities
-or user.facebook_unpopulated.activities
-
-2) Start working on update handling

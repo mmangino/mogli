@@ -26,9 +26,9 @@ module Mogli
     has_association :likes, "Page"
     has_association :home, "Post"
     has_association :accounts, "Page"
+    has_association :apprequests, "AppRequest"
     has_association :languages, "Page"
     has_association :feed, "Post"
-    
 
     attr_reader :extended_permissions
 
