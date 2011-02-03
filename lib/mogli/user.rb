@@ -15,6 +15,7 @@ module Mogli
 
     hash_populating_accessor :location, "Page"
     hash_populating_accessor :hometown, "Page"
+    hash_populating_accessor :languages, "Page"
 
     has_association :activities, "Activity"
     has_association :friends, "User"

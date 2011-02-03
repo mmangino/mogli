@@ -115,6 +115,14 @@ describe Mogli::Client do
       result = client.post("1/feed","Post",:message=>"message")
       result.should == Mogli::Post.new(:id=>123434)
     end
+    
+    it "creates object in a way that ignore invalid properties" do
+      Mogli::Client.stub!(:post).and_return({:id=>123434,:completely_invalid_property=>1})
+      client = Mogli::Client.new("1234")
+      lambda do
+        result = client.post("1/feed","Post",:message=>"message")
+      end.should_not raise_error
+    end
 
     it "raises specific exception if Facebook-imposed posting limit exceeded for feed" do
       error_message = "Feed action request limit reached"

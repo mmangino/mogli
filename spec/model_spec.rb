@@ -34,6 +34,12 @@ describe Mogli::Model do
     model.respond_to?(:id).should be_true
     model.respond_to?(:other_property).should be_true
   end
+  
+  it "warns when you try to set invalid properties" do
+    lambda do
+      TestModel.new(:invalid_property=>1,:id=>2)
+    end.should_not raise_error
+  end
 
   it "has a comments attribute which fetches when called" do
     mock_client.should_receive(:get_and_map).with("1/comments","Comment", {}).and_return("comments")
