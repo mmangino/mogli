@@ -136,6 +136,10 @@ describe Mogli::Model do
       model.fetch
       model.other_property.should == 2
     end
+    it "fetches data and returns itself" do
+      Mogli::Client.stub!(:get).and_return({:id=>1,:other_property=>2})
+      model.fetch.should == model
+    end
 
     it "raises an exception when there is no id" do
       lambda do
