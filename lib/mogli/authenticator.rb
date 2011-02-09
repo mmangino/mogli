@@ -40,11 +40,7 @@ module Mogli
           :client_secret => secret
         }
       )
-      if (request.respond_to?(:parsed_response))
-        request.parsed_response.split('=').last
-      else
-        request.to_s.split("=").last
-      end
+      Mogli::httparty_response(request).to_s.split("=").last
   end
 
   end

@@ -1,5 +1,7 @@
 module Mogli
-
+  def self.httparty_response(response)
+    response.respond_to?(:parsed_response) ? response.parsed_response : response
+  end
 end
 
 require "httparty"

@@ -108,7 +108,7 @@ module Mogli
     end
 
     def get_and_map(path,klass=nil,body_args = {})
-      data = self.class.get(api_path(path),:query=>default_params.merge(body_args))
+      data = Mogli::httparty_response(self.class.get(api_path(path),:query=>default_params.merge(body_args)))
       data = data.values if body_args.key?(:ids) && !data.key?('error')
       map_data(data,klass)
     end
