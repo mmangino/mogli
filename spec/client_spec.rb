@@ -110,7 +110,7 @@ describe Mogli::Client do
     end
     
     it "parses http response errors" do
-      Mogli::Client.should_receive(:post).and_return(mock("httpresponse",:code=>'500'))
+      Mogli::Client.should_receive(:post).and_return(mock("httpresponse",:code=>500))
       client = Mogli::Client.new("1234")
       lambda do
         result = client.post("1/feed","Post",:message=>"message")
