@@ -65,7 +65,7 @@ describe Mogli::Authenticator do
              :client_id => "123456",
              :client_secret => "secret"
            }).
-      and_return(mock("response", :parsed_response=> "access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo",:is_a? => true))
+      and_return("access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo")
       
       
       token = authenticator.get_access_token_for_application

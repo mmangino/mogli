@@ -124,6 +124,7 @@ describe Mogli::Model do
       actions_data = {:name => 'Action Name', :link => 'http://example.com'}
       actions_data_array = [actions_data]
       actions_data_array.stub!(:respond_to?).with(:to_json).and_return(false)
+      actions_data_array.stub!(:respond_to?).with(:code).and_return(false)
 
       new_model = TestModel.new(:id=>1,:other_property=>2,:actions => actions_data_array)
       new_model.post_params[:actions].should == "[{\"name\":\"Action Name\",\"link\":\"http://example.com\"}]"

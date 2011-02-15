@@ -19,6 +19,7 @@ module Mogli
     class OAuthException < ClientException; end
     # represents case that the facebook limit on posts to a feed has been exceeded
     class FeedActionRequestLimitExceeded < ClientException; end
+    class HTTPException < ClientException; end
 
     def api_path(path)
       "https://graph.facebook.com/#{path}"
@@ -108,7 +109,7 @@ module Mogli
     end
 
     def get_and_map(path,klass=nil,body_args = {})
-      data = Mogli::httparty_response(self.class.get(api_path(path),:query=>default_params.merge(body_args)))
+      data = self.class.get(api_path(path),:query=>default_params.merge(body_args))
       data = data.values if body_args.key?(:ids) && !data.key?('error')
       map_data(data,klass)
     end
@@ -183,6 +184,7 @@ module Mogli
     end
 
     def raise_error_if_necessary(data)
+      raise HTTPException if data.respond_to?(:code) and data.code != '200'
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
           self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
