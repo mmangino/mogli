@@ -3,7 +3,7 @@ module Mogli
     set_search_type
 
     define_properties :first_name, :last_name, :link, :about, :birthday, :gender,
-          :email, :website, :timezone, :updated_time, :verified, :political, 
+          :email, :website, :timezone, :updated_time, :verified, :political, :bio,
           :relationship_status, :locale, :religion, :quotes, :third_party_id
 
     def self.recognize?(hash)
@@ -16,6 +16,7 @@ module Mogli
     hash_populating_accessor :location, "Page"
     hash_populating_accessor :hometown, "Page"
     hash_populating_accessor :languages, "Page"
+    hash_populating_accessor :significant_other, "User"
 
     has_association :activities, "Activity"
     has_association :friends, "User"
