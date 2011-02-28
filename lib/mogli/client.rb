@@ -29,6 +29,10 @@ module Mogli
       "https://api.facebook.com/method/fql.query"
     end
 
+    def fql_multiquery_path
+      "https://api.facebook.com/method/fql.multiquery"
+    end
+    
     def initialize(access_token = nil,expiration=nil)
       @access_token = access_token
       # nil expiration means extended access
@@ -108,6 +112,20 @@ module Mogli
       map_data(data,klass)
     end
 
+    def fql_multiquery(queries,klass=nil,format="json")
+      data = self.class.post(fql_multiquery_path,:body=>default_params.merge({:queries=>queries.to_json,:format=>format}))
+      return data unless format=="json"
+      if response = map_data(data,klass)
+        # Following Facebooker convention & parsing results into constituent results
+        # map subquery names to result set in hash
+        # Returns: {'fql-query-name1' => [fql-query-name1-values], ...}
+        queries.each_key.inject({}) do |res, q|
+          res[q] = response.find{|r| r['name'] == q.to_s}.fetch('fql_result_set')
+          res
+        end
+      end
+    end
+    
     def get_and_map(path,klass=nil,body_args = {})
       data = self.class.get(api_path(path),:query=>default_params.merge(body_args))
       data = data.values if body_args.key?(:ids) && !data.key?('error')
