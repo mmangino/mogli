@@ -9,8 +9,8 @@ module Mogli
     end
     
     # Adds single query to multiquery with class used to populate results
-    def add_named_query_for_class(name, query, klass)
-      @queries[name] = [query, klass]
+    def add_named_query_for_class(query_name, query, klass)
+      @queries[query_name] = [query, klass]
     end
     
     # Fetch and parse results.
@@ -28,13 +28,13 @@ module Mogli
     
     def parse_response(response)
       # Fetch each subquery and map its results to the desired class,
-      @queries.each_key.inject({}) do |res, name|
+      @queries.each_key.inject({}) do |res, query|
         # Default value is empty array
-        res[name] = []
+        res[query] = []
         # Find subquery by name in response
-        vals = response.find{|r| r['name'] == name.to_s}
+        vals = response.find{|r| r['name'] == query.to_s}
         if vals && vals.has_key?('fql_result_set')
-          res[name] = @client.map_to_class(vals['fql_result_set'], @queries[name][1])
+          res[query] = @client.map_to_class(vals['fql_result_set'], @queries[query][1])
         end
         res
       end
