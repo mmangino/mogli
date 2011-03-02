@@ -10,7 +10,7 @@ module Mogli
     include HTTParty
     include Mogli::Client::Event
     include Mogli::Client::User
-
+    
     class ClientException < Exception; end
     class UnrecognizeableClassError < ClientException; end
     class QueryParseException < ClientException; end
@@ -112,18 +112,9 @@ module Mogli
       map_data(data,klass)
     end
 
-    def fql_multiquery(queries,klass=nil,format="json")
-      data = self.class.post(fql_multiquery_path,:body=>default_params.merge({:queries=>queries.to_json,:format=>format}))
-      return data unless format=="json"
-      if response = map_data(data,klass)
-        # Following Facebooker convention & parsing results into constituent results
-        # map subquery names to result set in hash
-        # Returns: {'fql-query-name1' => [fql-query-name1-values], ...}
-        queries.each_key.inject({}) do |res, q|
-          res[q] = response.find{|r| r['name'] == q.to_s}.fetch('fql_result_set')
-          res
-        end
-      end
+    def fql_multiquery(queries)
+      data = self.class.post(fql_multiquery_path,:body=>default_params.merge({:queries=>queries.to_json,:format=>"json"}))
+      map_data(data)
     end
     
     def get_and_map(path,klass=nil,body_args = {})

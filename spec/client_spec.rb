@@ -191,25 +191,18 @@ describe Mogli::Client do
       client.fql_multiquery(fql)
     end
     
-    it "supports xml" do 
-      fql = {"query1"=>"select uid from user"}
-      Mogli::Client.should_receive(:post).with("https://api.facebook.com/method/fql.multiquery",:body=>{:format=>"xml",:queries=>fql.to_json,:access_token=>"1234"})
-      client = Mogli::Client.new("1234")
-      client.fql_multiquery(fql,nil,"xml")
-    end
-    
-    it "returns hash with key names used in query mapping to return values" do
-      # contrived multiquery
-      fql = {"query1"=>"SELECT fromid FROM comment WHERE post_id = 123343434",
-        "query2"=>"SELECT uid, first_name, last_name FROM user WHERE uid IN (SELECT fromid FROM #query1)"
-      }
-      Mogli::Client.should_receive(:post).and_return([{"name"=>"query2", "fql_result_set"=>[{"uid"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino"}]},
-      {"name"=>"query1","fql_result_set"=>[{"fromid"=>12451752}]}])
-      client = Mogli::Client.new("1234")
-      res = client.fql_multiquery(fql)
-      res.should be_an_instance_of(Hash)
-      res['query1'].should == [{"fromid"=>12451752}]
-      res['query2'].should == [{"uid"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino"}]
+    it "returns hash with query names and values matching desired classes" do
+      Mogli::Client.should_receive(:post).and_return([
+        {"name"=>"users", "fql_result_set"=>[{"uid"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino"}]},
+        {"name"=>"comment_user","fql_result_set"=>[{"fromid"=>12451752}]}
+      ])
+      
+      f = Mogli::FqlMultiquery.new(Mogli::Client.new("1234"))
+      f.add_named_query_for_class("comment_user", "SELECT fromid FROM comment WHERE post_id = 123343434", Mogli::Comment)
+      f.add_named_query_for_class("users", "SELECT uid, first_name, last_name FROM user WHERE uid IN (SELECT fromid FROM #comment_user)", Mogli::User)
+      results = f.results
+      results["users"].first.class.should == Mogli::User
+      results["comment_user"].first.class.should == Mogli::Comment
     end
   end
   
