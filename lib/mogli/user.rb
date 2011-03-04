@@ -100,8 +100,13 @@ module Mogli
     end
     
     def image_url
-      @image_url ||= begin
-        client.class.get(client.api_path("#{id}/picture"), :query => client.default_params, :no_follow => true)
+      @image_url ||= image(:url_only? => true)
+    end
+    
+    def image(options = {})
+      begin
+        response = client.class.get(client.api_path("#{id}/picture"), :query => client.default_params, :no_follow => options.delete(:url_only?))
+        Tempfile.new("mogli_user_image").tap { |image_file| image_file.write(response.body); image_file.close }
       rescue HTTParty::RedirectionTooDeep => e
         e.response["location"]
       end
