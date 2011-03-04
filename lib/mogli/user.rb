@@ -99,13 +99,17 @@ module Mogli
       extended_permissions[permission]
     end
     
-    def image_url
-      @image_url ||= image(:url_only? => true)
+    def image_url(options = {})
+      @image_url ||= {}
+      @image_url[options] ||= image(options.merge({ :url_only? => true }))
     end
     
     def image(options = {})
       begin
-        response = client.class.get(client.api_path("#{id}/picture"), :query => client.default_params, :no_follow => options.delete(:url_only?))
+        response = client.class.get(client.api_path("#{id}/picture"), {
+          :no_follow  => options.delete(:url_only?),
+          :query      => client.default_params.merge(options) 
+        })
         Tempfile.new("mogli_user_image").tap { |image_file| image_file.write(response.body); image_file.close }
       rescue HTTParty::RedirectionTooDeep => e
         e.response["location"]
