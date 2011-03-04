@@ -100,7 +100,7 @@ module Mogli
     end
     
     def image_url
-      begin
+      @image_url ||= begin
         client.class.get(client.api_path("#{id}/picture"), :query => client.default_params, :no_follow => true)
       rescue HTTParty::RedirectionTooDeep => e
         e.response["location"]
