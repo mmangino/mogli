@@ -43,7 +43,6 @@ module Mogli
       :publish_stream,
       :create_event,
       :rsvp_event,
-      :sms,
       :offline_access,
       :publish_checkins,
 
