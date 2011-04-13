@@ -215,6 +215,10 @@ describe Mogli::Client do
     it "returns the raw value with no class specified" do
       client.map_data(user_data).should be_an_instance_of(Hash)
     end
+    
+    it "returns nil if we get a false response" do
+      client.map_data(false,Mogli::User).should be_false
+    end
 
     it "returns the array if no class is specified and there is only a data parameter" do
       client.map_data({"data"=>[user_data,user_data]}).should be_kind_of(Array)

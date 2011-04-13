@@ -25,7 +25,7 @@ describe Mogli::User do
 
     it "finds optional fields for a user" do
       Mogli::Client.should_receive(:get).with("https://graph.facebook.com/1",
-        :query=>{:fields => [:birthday, :gender]}).and_return({:id=>1, :birthday=>'09/15', :gender => 'male'})
+        :query=>{:fields => "birthday,gender"}).and_return({:id=>1, :birthday=>'09/15', :gender => 'male'})
       user = Mogli::User.find(1, nil, :birthday, :gender)
       user.birthday.should == '09/15'
       user.gender.should == 'male'
