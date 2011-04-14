@@ -1,11 +1,13 @@
 require "spec_helper"
 class TestModel < Mogli::Model
-  define_properties :id, :other_property
-  creation_properties :other_property
+  set_search_type :test_model
+  define_properties :id, :other_property, :actions
+  creation_properties :other_property, :actions
   has_association :comments, "Comment"
 
   hash_populating_accessor :from, "User"
   hash_populating_accessor :activities, "Activity"
+  hash_populating_accessor :actions, "Action"
 end
 
 
@@ -22,23 +24,37 @@ describe Mogli::Model do
   end
 
 
-  it "allow setting the client" do
+  it "allows setting the client" do
     user = Mogli::Model.new
     user.client = "client"
     user.client.should == "client"
   end
 
-  it "has a define proeprties method" do
+  it "has a define properties method" do
     model.respond_to?(:id).should be_true
     model.respond_to?(:other_property).should be_true
   end
+  
+  it "warns when you try to set invalid properties" do
+    lambda do
+      TestModel.new(:invalid_property=>1,:id=>2)
+    end.should_not raise_error
+  end
 
-  it "have an comments attribute which fetches when called" do
+  it "has a comments attribute which fetches when called" do
     mock_client.should_receive(:get_and_map).with("1/comments","Comment", {}).and_return("comments")
     model.comments.should == "comments"
   end
+  
+  it "populates associations if available" do
+    model = TestModel.new("id"=>1, "comments"=>{"data"=>[{"id"=>1,"message"=>"first"},{"id"=>2,"message"=>"second"}]})
+    mock_client.should_receive(:get_and_map).never
+    model.comments.size.should == 2
+    model.comments.first.id.should == 1
+    model.comments.last.message.should == "second"
+  end
 
-  it "only fetch activities once" do
+  it "only fetches activities once" do
     mock_client.should_receive(:get_and_map).once.with("1/comments","Comment", {}).and_return([])
     model.comments
     model.comments
@@ -84,18 +100,40 @@ describe Mogli::Model do
     model.should be_frozen
   end
 
-  it "knows which attributes are posted" do
-    TestModel.new(:id=>1,:other_property=>2).post_params.should == {:other_property=>2}
-  end
-
-  it "will allow updating status with no object" do
-    mock_client.should_receive(:post).once.with("1/comments",nil,{}).and_return([])
-    model.comments_create
-  end
-
   it "emits warnings when properties that don't exist are written to" do
     model.should_receive(:warn_about_invalid_property).with("doesnt_exist")
     model.doesnt_exist=1
+  end
+
+  describe "Posting" do
+    it "knows which properties are posted" do
+      TestModel.new(:id=>1,:other_property=>2).post_params.keys.should == TestModel.creation_keys
+    end
+
+    it "includes regular hash properties for posting" do
+      TestModel.new(:id=>1,:other_property=>2).post_params[:other_property].should == 2
+    end
+
+    it "includes associated properties for posting" do
+      actions_data = {:name => 'Action Name', :link => 'http://example.com'}
+      new_model = TestModel.new(:id=>1,:other_property=>2,:actions => [actions_data])
+      new_model.post_params[:actions].should == "[{\"name\":\"Action Name\",\"link\":\"http://example.com\"}]"
+    end
+
+    it "includes associated properties for posting even if Array doesn't have to_json method" do
+      actions_data = {:name => 'Action Name', :link => 'http://example.com'}
+      actions_data_array = [actions_data]
+      actions_data_array.stub!(:respond_to?).with(:to_json).and_return(false)
+      actions_data_array.stub!(:respond_to?).with(:code).and_return(false)
+
+      new_model = TestModel.new(:id=>1,:other_property=>2,:actions => actions_data_array)
+      new_model.post_params[:actions].should == "[{\"name\":\"Action Name\",\"link\":\"http://example.com\"}]"
+    end
+
+    it "will allow updating status with no object" do
+      mock_client.should_receive(:post).once.with("1/comments",nil,{}).and_return([])
+      model.comments_create
+    end
   end
 
   describe "Fetching" do
@@ -105,12 +143,102 @@ describe Mogli::Model do
       model.fetch
       model.other_property.should == 2
     end
+    it "fetches data and returns itself" do
+      Mogli::Client.stub!(:get).and_return({:id=>1,:other_property=>2})
+      model.fetch.should == model
+    end
 
     it "raises an exception when there is no id" do
       lambda do
         TestModel.new.fetch
       end.should raise_error(ArgumentError)
     end
+  end
+
+  describe "Finding" do
+
+    it "finds many models when id is an Array" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/", :query =>{ :ids => '1,2'}
+      ).and_return({
+        "1" => { :id => 1 }, "2" => { :id => 2 , :other_property => "Bob"}
+      })
+      users = TestModel.find([1,2])
+      users.should have(2).elements
+      users.each {|user| user.should be_instance_of(TestModel)}
+      users[1].other_property.should == "Bob"
+    end
+
+    it "raises an exeption if id doesn't exist" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/123456", :query => {}
+      ).and_return({
+        "error"=> {"type"=>"QueryParseException", "message"=>"Some of the aliases you requested do not exist: 123456"}
+      })
+      lambda do
+        TestModel.find(123456)
+      end.should raise_error(Mogli::Client::QueryParseException, "Some of the aliases you requested do not exist: 123456")
+
+    end
+
+    it "raises an exception if one from many ids doesn't exist" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/", :query =>{ :ids => '1,123456'}
+      ).and_return({
+        "error"=> {"type"=>"QueryParseException", "message"=>"Some of the aliases you requested do not exist: 123456"}
+      })
+      lambda do
+        TestModel.find([1,123456])
+      end.should raise_error(Mogli::Client::QueryParseException, "Some of the aliases you requested do not exist: 123456")
+
+    end
+
+  end
+
+  describe "Searching" do
+
+
+    it "search for graph resources if specific class defined search type" do
+      client = Mogli::Client.new('123');
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/search", :query => {:q=> "s", :type => 'test_model', :access_token => "123"}
+      ).and_return({
+        'data' => [{'id' => 1, 'other_property' => "Test"}]
+      })
+      results = TestModel.search('s',client)
+      results.class.should == Mogli::FetchingArray
+      results.first.id.should == 1
+    end
+
+    it "search in all resource types when searching in Mogli::Model" do
+      client = Mogli::Client.new('123');
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/search", :query => {:q=> "s", :access_token => "123"}
+      ).and_return({
+        'data' => [{'id' => 1, 'message' => "status!", 'type' => "status"},
+        {'id' => 2, 'email' => "bob@example.org", 'type' => "user"}
+      ]})
+      results = Mogli::Model.search('s',client)
+      results.map(&:class).sort_by(&:to_s).should == [Mogli::Status, Mogli::User]
+    end
+
+    it "raises access token error if client is not defined" do
+      Mogli::Client.should_receive(:get).with(
+        "https://graph.facebook.com/search", :query => {:q=> "s", :type => 'user'}
+      ).and_return({
+        "error"=> {"type"=>"OAuthUnauthorizedClientException", "message"=>"An access token is required to request this resource."}
+      })
+      lambda {
+        Mogli::User.search('s')
+      }.should raise_error(Mogli::Client::OAuthUnauthorizedClientException, "An access token is required to request this resource.")
+    end
+
+    it "raises error if class doesn't define search type" do
+      lambda {
+        Mogli::Album.search("Joe")
+      }.should raise_error(NoMethodError, "Can't search for Mogli::Album")
+    end
+
   end
 
 end

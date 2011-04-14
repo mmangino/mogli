@@ -1,9 +1,7 @@
 module Mogli
-  
 end
 
 require "httparty"
-require "hashie"
 
 
 require "mogli/authenticator"
@@ -14,12 +12,19 @@ require "mogli/action"
 require "mogli/activity"
 require "mogli/address"
 require "mogli/album"
+require "mogli/application"
+require "mogli/app_request"
 require "mogli/book"
+require "mogli/checkin"
 require "mogli/comment"
 require "mogli/education"
 require "mogli/event"
 require "mogli/group"
+require "mogli/insight"
+require "mogli/insight_value"
 require "mogli/interest"
+require "mogli/link"
+require "mogli/location"
 require "mogli/movie"
 require "mogli/music"
 require "mogli/note"
@@ -32,3 +37,5 @@ require "mogli/video"
 require "mogli/work"
 require "mogli/user"
 require "mogli/client"
+require "mogli/app_client"
+require "mogli/fql_multiquery"

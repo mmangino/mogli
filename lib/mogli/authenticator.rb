@@ -24,11 +24,30 @@ module Mogli
       keystr = session_keys.is_a?(Array) ?
                  session_keys.join(',') : session_keys
       client = Mogli::Client.new
-      client.post("oauth/exchange_sessions", nil,
+      response = client.post("oauth/exchange_sessions", nil,
                   {:type => 'client_cred',
                    :client_id => client_id,
                    :client_secret => secret,
                    :sessions => keystr})
+      raise_exception_if_required(response)
+      response
+    end
+    
+    def get_access_token_for_application
+      client = Mogli::Client.new
+      response = client.class.post(client.api_path('oauth/access_token'),
+        :body=> {
+          :grant_type => 'client_credentials',
+          :client_id => client_id,
+          :client_secret => secret
+        }
+      )
+      raise_exception_if_required(response)
+      response.to_s.split("=").last
+    end
+    
+    def raise_exception_if_required(response)
+      raise Mogli::Client::HTTPException if response.code != 200
     end
 
   end
