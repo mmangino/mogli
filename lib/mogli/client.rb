@@ -138,9 +138,9 @@ module Mogli
     #protected
 
     def extract_hash_or_array(hash_or_array,klass)
+      hash_or_array = hash_or_array.parsed_response if hash_or_array.respond_to?(:parsed_response)
       return nil if hash_or_array == false
       return hash_or_array if hash_or_array.nil? or hash_or_array.kind_of?(Array)
-      hash_or_array = hash_or_array.parsed_response if hash_or_array.respond_to?(:parsed_response)
       return extract_fetching_array(hash_or_array,klass) if is_fetching_array?(hash_or_array)
       return hash_or_array
     end
@@ -162,7 +162,7 @@ module Mogli
     end
 
     def map_to_class(hash_or_array,klass)
-      return nil if hash_or_array.nil?
+      return nil if !hash_or_array
       if hash_or_array.kind_of?(Array)
         hash_or_array.map! {|i| create_instance(klass,i)}
       else
