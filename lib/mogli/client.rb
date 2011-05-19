@@ -55,7 +55,14 @@ module Mogli
       parts.each do |p| (k,v) = p.split("=")
         hash[k]=CGI.unescape(v)
       end
-      new(hash["access_token"],hash["expires"].to_s.to_i)
+
+      if hash["expires"]
+        expires = Time.now.to_i + hash["expires"].to_i
+      else
+        expires = nil
+      end
+ 
+      new(hash["access_token"],expires)
     end
     
     def self.raise_client_exception(post_data)
