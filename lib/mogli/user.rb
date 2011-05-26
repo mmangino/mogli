@@ -2,7 +2,7 @@ module Mogli
   class User < Profile
     set_search_type
 
-    define_properties :first_name, :last_name, :link, :about, :birthday, :gender,
+    define_properties :username, :first_name, :last_name, :link, :about, :birthday, :gender,
           :email, :website, :timezone, :updated_time, :verified, :political, :bio,
           :relationship_status, :locale, :religion, :quotes, :third_party_id
 
@@ -43,7 +43,6 @@ module Mogli
       :publish_stream,
       :create_event,
       :rsvp_event,
-      :sms,
       :offline_access,
       :publish_checkins,
 
