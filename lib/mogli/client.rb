@@ -153,6 +153,7 @@ module Mogli
     end
     
     def is_fetching_array?(hash)
+      return false if hash.instance_of?(Fixnum)
       hash.has_key?("data") and hash["data"].instance_of?(Array)
     end
 
@@ -172,6 +173,8 @@ module Mogli
       return nil if !hash_or_array
       if hash_or_array.kind_of?(Array)
         hash_or_array.map! {|i| create_instance(klass,i)}
+      elsif hash_or_array.kind_of?(Fixnum)
+        hash_or_array = create_instance(klass,{})
       else
         hash_or_array = create_instance(klass,hash_or_array)
       end
