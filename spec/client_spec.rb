@@ -142,6 +142,14 @@ describe Mogli::Client do
         result = client.post("1/feed","Post",:message=>"message")
       end.should raise_error(Mogli::Client::FeedActionRequestLimitExceeded, error_message)
     end
+    
+    it "posts to a url as a parameter" do
+      Mogli::Client.should_receive(:post).with("http://cool-tabs.com", :body=>{:access_token=>"1234"}).and_return({:id=>123434})
+      client = Mogli::Client.new("1234")
+      result = client.post_to_url("http://cool-tabs.com","Post",{})
+      result.should == Mogli::Post.new(:id=>123434)
+    end
+    
 
   end
 

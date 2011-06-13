@@ -103,6 +103,11 @@ module Mogli
       data = self.class.post(api_path(path),:body=>default_params.merge(body_args))
       map_data(data,klass)
     end
+    
+    def post_to_url(url,klass,body_args={})
+      data = self.class.post(url,:body=>default_params.merge(body_args))
+      map_data(data,klass)
+    end
 
     def delete(path)
       self.class.delete(api_path(path),:query=>default_params)
