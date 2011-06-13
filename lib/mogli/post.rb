@@ -7,7 +7,7 @@ module Mogli
       :description, :source, :icon, :attribution, :actions, :likes,
       :created_time, :updated_time, :privacy, :type
 
-    creation_properties :message, :picture, :link, :name, :description, :caption, :source, :actions
+    creation_properties :message, :picture, :link, :name, :description, :caption, :source, :actions, :privacy
 
     hash_populating_accessor :actions, "Action"
     has_association :comments, "Comment"
