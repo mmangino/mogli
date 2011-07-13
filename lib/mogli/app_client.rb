@@ -5,6 +5,11 @@ module Mogli
   class AppClient < Client
     attr_accessor :application_id
     
+    def initialize(app_token, application_id=nil)
+      super(app_token)
+      self.application_id = application_id
+    end
+    
     def subscription_url
       "https://graph.facebook.com/#{application_id}/subscriptions"
     end
@@ -22,6 +27,14 @@ module Mogli
     
     def subscriptions
       get_and_map_url(subscription_url,"Subscription")
+    end
+    
+    def post(path, klass, query)
+      super("#{application_id}/#{path}", klass, query)
+    end
+    
+    def get_and_map(path, klass, query)
+      super("#{application_id}/#{path}", klass, query)
     end
   end
 end
