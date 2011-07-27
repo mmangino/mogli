@@ -284,6 +284,11 @@ describe Mogli::Client do
       client.get_and_map(148800401968,"User").should be_nil
     end
 
+    it "returns nil if Facebook says true" do
+      Mogli::Client.should_receive(:get).and_return(true)
+      client.get_and_map(148800401968,"User").should be_nil
+    end
+    
     it "raises an exception with specific message when there is just an error" do
       lambda do
         client.map_data({"error"=>{"type"=>"OAuthAccessTokenException","message"=>"An access token is required to request this resource."}})
