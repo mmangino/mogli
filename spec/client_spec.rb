@@ -109,6 +109,18 @@ describe Mogli::Client do
         result = client.post("1/feed","Post",:message=>"message")
       end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
     end
+
+    it "parses errors in the returns of posts, even when response code is not 200" do
+      error = {"type"=>"OAuthAccessTokenException","message"=>"An access token is required to request this resource."}
+      mock_response = mock("response", :code => 500, :kind_of? => true,
+        :keys => mock("keys", :size => 1), :[] => error)
+      Mogli::Client.should_receive(:post).and_return(mock_response)
+      client = Mogli::Client.new("1234")
+      lambda do
+        result = client.post("1/feed","Post",:message=>"message")
+      end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
+    end
+
     
     it "parses http response errors" do
       Mogli::Client.should_receive(:post).and_return(mock("httpresponse",:code=>500))
