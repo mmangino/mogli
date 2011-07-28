@@ -146,7 +146,8 @@ module Mogli
 
     def extract_hash_or_array(hash_or_array,klass)
       hash_or_array = hash_or_array.parsed_response if hash_or_array.respond_to?(:parsed_response)
-      return nil if hash_or_array == false
+      return nil if hash_or_array == false || hash_or_array == true
+
       return hash_or_array if hash_or_array.nil? or hash_or_array.kind_of?(Array)
       return extract_fetching_array(hash_or_array,klass) if is_fetching_array?(hash_or_array)
       return hash_or_array
@@ -200,12 +201,12 @@ module Mogli
     end
 
     def raise_error_if_necessary(data)
-      raise HTTPException if data.respond_to?(:code) and data.code != 200
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
           self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
         end
       end
+      raise HTTPException if data.respond_to?(:code) and data.code != 200
     end
 
     def fields_to_serialize

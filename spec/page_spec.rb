@@ -16,4 +16,14 @@ describe Mogli::Page do
     client = page.client_for_page
     client.access_token.should == "my token"
   end
+
+  it "should not raise an error when FB returns # of checkins in page data" do
+    Mogli::Client.stub!(:get).and_return({:id=>1, :checkins => 999})
+    page = Mogli::Page.new(:id => 1)
+    lambda do
+      page.fetch
+    end.should_not raise_error(NoMethodError)
+    page.checkins.should == 999
+  end
+
 end
