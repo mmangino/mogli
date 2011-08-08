@@ -1,7 +1,7 @@
 module Mogli
   class Work < Model
     
-    define_properties :start_date, :end_date, :description
+    define_properties :start_date, :end_date, :description, :work
     
     hash_populating_accessor :projects, "Page"
     hash_populating_accessor :employer, "Page"
