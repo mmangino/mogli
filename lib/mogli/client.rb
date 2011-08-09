@@ -10,7 +10,7 @@ module Mogli
     include HTTParty
     include Mogli::Client::Event
     include Mogli::Client::User
-    
+
     class ClientException < Exception; end
     class UnrecognizeableClassError < ClientException; end
     class QueryParseException < ClientException; end
@@ -19,6 +19,7 @@ module Mogli
     class OAuthException < ClientException; end
     # represents case that the facebook limit on posts to a feed has been exceeded
     class FeedActionRequestLimitExceeded < ClientException; end
+    class SessionInvalidatedDueToPasswordChange < ClientException; end
     class HTTPException < ClientException; end
 
     def api_path(path)
@@ -32,7 +33,7 @@ module Mogli
     def fql_multiquery_path
       "https://api.facebook.com/method/fql.multiquery"
     end
-    
+
     def initialize(access_token = nil,expiration=nil)
       @access_token = access_token
       # nil expiration means extended access
@@ -49,7 +50,7 @@ module Mogli
       post_data = get(authenticator.access_token_url(code)).parsed_response
       if (response_is_error?(post_data))
         raise_client_exception(post_data)
-      end        
+      end
       parts = post_data.split("&")
       hash = {}
       parts.each do |p| (k,v) = p.split("=")
@@ -61,10 +62,10 @@ module Mogli
       else
         expires = nil
       end
- 
+
       new(hash["access_token"],expires)
     end
-    
+
     def self.raise_client_exception(post_data)
       raise_error_by_type_and_message(post_data["error"]["type"], post_data["error"]["message"])
     end
@@ -72,13 +73,15 @@ module Mogli
     def self.raise_error_by_type_and_message(type, message)
       if type == 'OAuthException' && message =~ /Feed action request limit reached/
         raise FeedActionRequestLimitExceeded.new(message)
+      elsif type == 'OAuthException' && message =~ /The session has been invalidated because the user has changed the password/
+        raise SessionInvalidatedDueToPasswordChange.new(message)
       elsif Mogli::Client.const_defined?(type)
         raise Mogli::Client.const_get(type).new(message)
       else
         raise ClientException.new("#{type}: #{message}")
       end
     end
-    
+
     def self.response_is_error?(post_data)
        post_data.kind_of?(Hash) and
        !post_data["error"].blank?
@@ -86,17 +89,11 @@ module Mogli
 
     def self.create_from_session_key(session_key, client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
-
-      access_data =
-        authenticator.get_access_token_for_session_key(session_key) || {}
-
-      expires = if access_data['expires']
-        Time.now.to_i + access_data['expires'].to_i
-      end
-
-      new(access_data['access_token'], expires)
+      access_data = authenticator.get_access_token_for_session_key(session_key)
+      new(access_data['access_token'],
+          Time.now.to_i + access_data['expires'].to_i)
     end
-    
+
     def self.create_and_authenticate_as_application(client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
       access_data = authenticator.get_access_token_for_application
@@ -129,7 +126,7 @@ module Mogli
       data = self.class.post(fql_multiquery_path,:body=>default_params.merge({:queries=>queries.to_json,:format=>"json"}))
       map_data(data)
     end
-    
+
     def get_and_map(path,klass=nil,body_args = {})
       data = self.class.get(api_path(path),:query=>default_params.merge(body_args))
       data = data.values if body_args.key?(:ids) && !data.key?('error')
@@ -157,7 +154,7 @@ module Mogli
       return extract_fetching_array(hash_or_array,klass) if is_fetching_array?(hash_or_array)
       return hash_or_array
     end
-    
+
     def is_fetching_array?(hash)
       hash.has_key?("data") and hash["data"].instance_of?(Array)
     end
@@ -190,7 +187,7 @@ module Mogli
       end
       klass_to_create.new(data,self)
     end
-    
+
     def capitalize_if_required(string)
       string.downcase == string ? string.capitalize : string
     end
@@ -206,7 +203,7 @@ module Mogli
     end
 
     def raise_error_if_necessary(data)
-      raise HTTPException if data.respond_to?(:code) and data.code != 200
+      raise HTTPException if data.respond_to?(:code) and !(data.code == 200 or data.code == 400)
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
           self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
