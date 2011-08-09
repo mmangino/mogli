@@ -8,7 +8,7 @@ task :default => :spec
 # So it can we used for both versions of rspec
 if Spec::VERSION::MAJOR <= 1
   require 'spec/rake/spectask'
-  
+
   desc 'Test the  plugin.'
   Spec::Rake::SpecTask.new(:spec) do |t|
     t.libs << 'lib'
