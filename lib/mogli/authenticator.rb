@@ -13,11 +13,11 @@ module Mogli
 
     def authorize_url(options = {})
       options_part = "&" + options.map {|k,v| "#{k}=#{v.kind_of?(Array) ? v.join(',') : v}" }.join('&') unless options.empty?
-      "https://graph.facebook.com/oauth/authorize?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url)}#{options_part}"
+      "https://graph.facebook.com/oauth/authorize?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url) if !callback_url.blank?}#{options_part}"
     end
 
     def access_token_url(code)
-      "https://graph.facebook.com/oauth/access_token?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url)}&client_secret=#{secret}&code=#{CGI.escape(code)}"
+      "https://graph.facebook.com/oauth/access_token?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url) if !callback_url.blank?}&client_secret=#{secret}&code=#{CGI.escape(code)}"
     end
 
     def get_access_token_for_session_key(session_keys)
