@@ -11,5 +11,6 @@ spec = Gem::Specification.new do |s|
   s.homepage = 'http://developers.facebook.com/docs/api'
   s.add_dependency 'httparty', '>= 0.4.3'
   s.add_dependency 'hashie', '~> 1.1.0'
+  s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
 end
