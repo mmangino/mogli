@@ -4,6 +4,7 @@ spec = Gem::Specification.new do |s|
   s.summary = 'Open Graph Library for Ruby'
   s.description = 'Simple library for accessing the Facebook Open Graph API'
   s.files = Dir['lib/**/*.rb']
+  s.test_files = Dir['spec/**/*.rb']
   s.require_path = 'lib'
   s.author = 'Mike Mangino'
   s.email = 'mmangino@elevatedrails.com'
