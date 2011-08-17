@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'mogli'
-  s.version = '0.0.28'
+  s.version = '0.0.30'
   s.summary = 'Open Graph Library for Ruby'
   s.description = 'Simple library for accessing the Facebook Open Graph API'
   s.files = Dir['lib/**/*.rb']
