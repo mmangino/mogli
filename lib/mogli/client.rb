@@ -90,8 +90,17 @@ module Mogli
     def self.create_from_session_key(session_key, client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
       access_data = authenticator.get_access_token_for_session_key(session_key)
-      new(access_data['access_token'],
-          Time.now.to_i + access_data['expires'].to_i)
+      new(access_token_from_access_data(access_data),expiration_from_access_data(access_data))
+    end
+    
+    def self.access_token_from_access_data(access_data)
+      return nil if access_data.nil?
+      access_data['access_token']
+    end
+    
+    def self.expiration_from_access_data(access_data)
+      return nil if access_data.nil? or access_data['expires'].nil?
+      Time.now.to_i + access_data['expires'].to_i
     end
 
     def self.create_and_authenticate_as_application(client_id, secret)
@@ -203,7 +212,7 @@ module Mogli
     end
 
     def raise_error_if_necessary(data)
-      raise HTTPException if data.respond_to?(:code) and !(data.code == 200 or data.code == 400)
+      raise HTTPException if data.respond_to?(:code) and data.code != 200
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
           self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
