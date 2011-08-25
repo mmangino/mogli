@@ -32,7 +32,10 @@ module Mogli
         # Default value is empty array
         res[query] = []
         # Find subquery by name in response
-        vals = response.find{|r| r['name'] == query.to_s}
+        vals = response.find{|r|
+          return false unless r.is_a? Hash
+          r['name'] == query.to_s
+        }
         if vals && vals.has_key?('fql_result_set')
           res[query] = @client.map_to_class(vals['fql_result_set'], @queries[query][1])
         end
