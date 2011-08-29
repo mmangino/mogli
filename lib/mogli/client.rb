@@ -174,8 +174,8 @@ module Mogli
       f.client = self
       f.classes = Array(klass)
       if hash["paging"]
-        f.next_url = hash["paging"]["next"]
-        f.previous_url = hash["paging"]["previous"]
+        f.next_url = URI.encode hash["paging"]["next"]
+        f.previous_url = URI.encode hash["paging"]["previous"]
       end
       f
     end
