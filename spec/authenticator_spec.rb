@@ -1,6 +1,5 @@
 require "spec_helper"
 describe Mogli::Authenticator do
-
   let :authenticator do
     Mogli::Authenticator.new("123456","secret","http://example.com/url")
   end
@@ -87,6 +86,15 @@ describe Mogli::Authenticator do
       token = authenticator.get_access_token_for_application
     end.should raise_error(Mogli::Client::HTTPException)
     
+  end
+
+  context "Oauth2" do
+    let :oauth2_authenticator do
+      Mogli::Authenticator.new("123456","secret",nil)
+    end
+    it "creates the access_token_url without a redirect URL" do
+      oauth2_authenticator.access_token_url("mycode").should == "https://graph.facebook.com/oauth/access_token?client_id=123456&redirect_uri=&client_secret=secret&code=mycode"
+    end
   end
 
 end
