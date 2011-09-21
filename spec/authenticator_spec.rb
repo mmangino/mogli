@@ -74,8 +74,10 @@ describe Mogli::Authenticator do
   end
 
   it "can ask for an application token" do
-    response = "access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo"
-    response.stub!(:code).and_return(200)
+    response = mock('HTTParty::Response',
+      :parsed_response => "access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo",
+      :code => 200)
+
     Mogli::Client.should_receive(:post).
       with("https://graph.facebook.com/oauth/access_token",
            :body=> {
@@ -91,8 +93,10 @@ describe Mogli::Authenticator do
   end
 
   it "raises an error if not a 200" do
-    response = "access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo"
-    response.stub!(:code).and_return(500)
+    response = mock('HTTParty::Response',
+      :parsed_response => "access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo",
+      :code => 500)
+
     Mogli::Client.should_receive(:post).and_return(response)
     lambda do
       token = authenticator.get_access_token_for_application

@@ -47,7 +47,7 @@ module Mogli
         }
       )
       raise_exception_if_required(response)
-      response.to_s.split("=").last
+      response.parsed_response.split("=").last
     end
     
     def raise_exception_if_required(response)
