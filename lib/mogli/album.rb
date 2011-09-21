@@ -1,7 +1,7 @@
 module Mogli
   class Album < Model
     
-    define_properties :id, :name, :description, :location, :privacy, :link, :count, :created_time, :updated_time
+    define_properties :id, :name, :description, :location, :cover_photo, :privacy, :link, :count, :created_time, :updated_time
     creation_properties :name, :description
     
     hash_populating_accessor :from, "User","Page"
