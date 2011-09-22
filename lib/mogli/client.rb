@@ -84,7 +84,7 @@ module Mogli
 
     def self.response_is_error?(post_data)
        post_data.kind_of?(Hash) and
-       !post_data["error"].blank?
+       !post_data["error"].empty?
     end
 
     def self.create_from_session_key(session_key, client_id, secret)
@@ -92,12 +92,12 @@ module Mogli
       access_data = authenticator.get_access_token_for_session_key(session_key)
       new(access_token_from_access_data(access_data),expiration_from_access_data(access_data))
     end
-    
+
     def self.access_token_from_access_data(access_data)
       return nil if access_data.nil?
       access_data['access_token']
     end
-    
+
     def self.expiration_from_access_data(access_data)
       return nil if access_data.nil? or access_data['expires'].nil?
       Time.now.to_i + access_data['expires'].to_i
