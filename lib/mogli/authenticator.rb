@@ -24,13 +24,17 @@ module Mogli
       keystr = session_keys.is_a?(Array) ?
                  session_keys.join(',') : session_keys
       client = Mogli::Client.new
-      response = client.post("oauth/exchange_sessions", nil,
-                  {:type => 'client_cred',
-                   :client_id => client_id,
-                   :client_secret => secret,
-                   :sessions => keystr})
+      response = client.class.post(client.api_path("oauth/exchange_sessions"),
+        :body => {
+          :type => 'client_cred',
+          :client_id => client_id,
+          :client_secret => secret,
+          :sessions => keystr
+        }
+      )
       raise_exception_if_required(response)
-      response
+      tokens = response.parsed_response
+      session_keys.is_a?(Array) ? tokens : tokens.first
     end
 
     def get_access_token_for_application
@@ -43,7 +47,7 @@ module Mogli
         }
       )
       raise_exception_if_required(response)
-      response.to_s.split("=").last
+      response.parsed_response.split("=").last
     end
 
     def raise_exception_if_required(response)
