@@ -112,7 +112,7 @@ module Mogli
             "FROM permissions " +
             "WHERE uid = #{self.id}"
       @extended_permissions = {}
-      perms_query_result = client.fql_query(fql).parsed_response.first
+      perms_query_result = client.fql_query(fql).first
       ALL_EXTENDED_PERMISSIONS.each do |perm|
         @extended_permissions[perm] = (perms_query_result[perm.to_s] == 1)
       end
