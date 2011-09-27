@@ -17,22 +17,26 @@ module Mogli
     end
 
     def access_token_url(code)
-      "https://graph.facebook.com/oauth/access_token?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url)}&client_secret=#{secret}&code=#{CGI.escape(code)}"
+      "https://graph.facebook.com/oauth/access_token?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url) unless callback_url.nil? || callback_url.empty?}&client_secret=#{secret}&code=#{CGI.escape(code)}"
     end
 
     def get_access_token_for_session_key(session_keys)
       keystr = session_keys.is_a?(Array) ?
                  session_keys.join(',') : session_keys
       client = Mogli::Client.new
-      response = client.post("oauth/exchange_sessions", nil,
-                  {:type => 'client_cred',
-                   :client_id => client_id,
-                   :client_secret => secret,
-                   :sessions => keystr})
+      response = client.class.post(client.api_path("oauth/exchange_sessions"),
+        :body => {
+          :type => 'client_cred',
+          :client_id => client_id,
+          :client_secret => secret,
+          :sessions => keystr
+        }
+      )
       raise_exception_if_required(response)
-      response
+      tokens = response.parsed_response
+      session_keys.is_a?(Array) ? tokens : tokens.first
     end
-    
+
     def get_access_token_for_application
       client = Mogli::Client.new
       response = client.class.post(client.api_path('oauth/access_token'),
@@ -43,9 +47,9 @@ module Mogli
         }
       )
       raise_exception_if_required(response)
-      response.to_s.split("=").last
+      response.parsed_response.split("=").last
     end
-    
+
     def raise_exception_if_required(response)
       raise Mogli::Client::HTTPException if response.code != 200
     end

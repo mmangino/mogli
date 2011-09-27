@@ -10,7 +10,7 @@ module Mogli
     include HTTParty
     include Mogli::Client::Event
     include Mogli::Client::User
-    
+
     class ClientException < Exception; end
     class UnrecognizeableClassError < ClientException; end
     class QueryParseException < ClientException; end
@@ -19,6 +19,7 @@ module Mogli
     class OAuthException < ClientException; end
     # represents case that the facebook limit on posts to a feed has been exceeded
     class FeedActionRequestLimitExceeded < ClientException; end
+    class SessionInvalidatedDueToPasswordChange < ClientException; end
     class HTTPException < ClientException; end
 
     def api_path(path)
@@ -32,7 +33,7 @@ module Mogli
     def fql_multiquery_path
       "https://api.facebook.com/method/fql.multiquery"
     end
-    
+
     def initialize(access_token = nil,expiration=nil)
       @access_token = access_token
       # nil expiration means extended access
@@ -49,7 +50,7 @@ module Mogli
       post_data = get(authenticator.access_token_url(code)).parsed_response
       if (response_is_error?(post_data))
         raise_client_exception(post_data)
-      end        
+      end
       parts = post_data.split("&")
       hash = {}
       parts.each do |p| (k,v) = p.split("=")
@@ -61,10 +62,10 @@ module Mogli
       else
         expires = nil
       end
- 
+
       new(hash["access_token"],expires)
     end
-    
+
     def self.raise_client_exception(post_data)
       raise_error_by_type_and_message(post_data["error"]["type"], post_data["error"]["message"])
     end
@@ -72,25 +73,36 @@ module Mogli
     def self.raise_error_by_type_and_message(type, message)
       if type == 'OAuthException' && message =~ /Feed action request limit reached/
         raise FeedActionRequestLimitExceeded.new(message)
+      elsif type == 'OAuthException' && message =~ /The session has been invalidated because the user has changed the password/
+        raise SessionInvalidatedDueToPasswordChange.new(message)
       elsif Mogli::Client.const_defined?(type)
         raise Mogli::Client.const_get(type).new(message)
       else
         raise ClientException.new("#{type}: #{message}")
       end
     end
-    
+
     def self.response_is_error?(post_data)
        post_data.kind_of?(Hash) and
-       !post_data["error"].blank?
+       !post_data["error"].empty?
     end
 
     def self.create_from_session_key(session_key, client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
       access_data = authenticator.get_access_token_for_session_key(session_key)
-      new(access_data['access_token'],
-          Time.now.to_i + access_data['expires'].to_i)
+      new(access_token_from_access_data(access_data),expiration_from_access_data(access_data))
     end
-    
+
+    def self.access_token_from_access_data(access_data)
+      return nil if access_data.nil?
+      access_data['access_token']
+    end
+
+    def self.expiration_from_access_data(access_data)
+      return nil if access_data.nil? or access_data['expires'].nil?
+      Time.now.to_i + access_data['expires'].to_i
+    end
+
     def self.create_and_authenticate_as_application(client_id, secret)
       authenticator = Mogli::Authenticator.new(client_id, secret, nil)
       access_data = authenticator.get_access_token_for_application
@@ -123,7 +135,7 @@ module Mogli
       data = self.class.post(fql_multiquery_path,:body=>default_params.merge({:queries=>queries.to_json,:format=>"json"}))
       map_data(data)
     end
-    
+
     def get_and_map(path,klass=nil,body_args = {})
       data = self.class.get(api_path(path),:query=>default_params.merge(body_args))
       data = data.values if body_args.key?(:ids) && !data.key?('error')
@@ -151,7 +163,7 @@ module Mogli
       return extract_fetching_array(hash_or_array,klass) if is_fetching_array?(hash_or_array)
       return hash_or_array
     end
-    
+
     def is_fetching_array?(hash)
       hash.has_key?("data") and hash["data"].instance_of?(Array)
     end
@@ -161,9 +173,9 @@ module Mogli
       f.concat(hash["data"])
       f.client = self
       f.classes = Array(klass)
-      if hash["paging"]
-        f.next_url = hash["paging"]["next"]
-        f.previous_url = hash["paging"]["previous"]
+      if paging=hash["paging"]
+        f.next_url = URI.encode paging["next"] unless paging["next"].nil?
+        f.previous_url = URI.encode paging["previous"] unless paging["previous"].nil?
       end
       f
     end
@@ -184,7 +196,7 @@ module Mogli
       end
       klass_to_create.new(data,self)
     end
-    
+
     def capitalize_if_required(string)
       string.downcase == string ? string.capitalize : string
     end
