@@ -9,7 +9,8 @@ spec = Gem::Specification.new do |s|
   s.author = 'Mike Mangino'
   s.email = 'mmangino@elevatedrails.com'
   s.homepage = 'http://developers.facebook.com/docs/api'
-  s.add_dependency 'hashie', '~> 1.1.0'
+  # the specific version of hashie doesn't seem to be required, at least from the light testing I've done
+  s.add_dependency 'hashie'#, '~> 1.1.0'
   s.add_dependency 'httparty', '>= 0.4.3'
   s.add_dependency 'multi_json', '~> 1.0.3'
   s.add_development_dependency 'json'
