@@ -13,6 +13,9 @@ module Mogli
     # Musicians
     define_properties :record_label, :hometown, :band_members, :genre
 
+    # Restaurants
+    define_properties :parking, :public_transit, :hours, :payment_options, :restaurant_services, :restaurant_specialties
+
     # As a like
     define_properties :created_time
 
