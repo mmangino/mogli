@@ -102,6 +102,11 @@ module Mogli
       extended_permissions[permission]
     end
 
+    # revoke all permissions for this user
+    def revoke_permission
+      client.delete("#{id}/permissions")
+    end
+    
     private
 
     # queries all extended permissions for this user for the current application
