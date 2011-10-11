@@ -1,4 +1,5 @@
 module Mogli
+  VERSION='0.3.5'
 end
 
 require "httparty"
@@ -43,3 +44,4 @@ require "mogli/test_user"
 require "mogli/client"
 require "mogli/app_client"
 require "mogli/fql_multiquery"
+
