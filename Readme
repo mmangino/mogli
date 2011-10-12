@@ -76,6 +76,11 @@ If the object requires a client, just pass one in:
 album = Mogli::Album.find(99394368305,client)
 album.photos
 
+You can also upload photos using httmultiparty:
+facebook_access_token = "..."
+client = Mogli::Client.new(facebook_access_token)
+client.post("me/photos", nil, {:source => File.open("myphoto.jpg")})
+
 ========================================
 Contributing
 ========================================
