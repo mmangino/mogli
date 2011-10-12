@@ -7,7 +7,7 @@ module Mogli
     attr_reader :default_params
     attr_reader :expiration
 
-    include HTTParty
+    include HTTMultiParty
     include Mogli::Client::Event
     include Mogli::Client::User
 
