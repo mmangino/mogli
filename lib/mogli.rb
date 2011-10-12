@@ -2,7 +2,7 @@ module Mogli
 end
 
 require "httparty"
-
+require "httmultiparty"
 
 require "mogli/authenticator"
 require "mogli/model"
