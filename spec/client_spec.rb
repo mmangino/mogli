@@ -172,6 +172,18 @@ describe Mogli::Client do
       end.should raise_error(Mogli::Client::SessionInvalidatedDueToPasswordChange, err_msg)
     end
 
+    it "parses a failure due to user permissions" do
+      err_type="OAuthException"
+      err_msg ="(#210) User not visible"
+      response={"error"=>{"type"=>err_type,"message"=>err_msg}}
+      mock_response = mock("response",:parsed_response=>response,:code=>403,:kind_of? => true,:keys => ["error"],:[] => response["error"])
+      Mogli::Client.should_receive(:post).and_return(mock_response)
+      client = Mogli::Client.new("1234")
+      lambda do
+        result = client.post("1/feed","Post",:message=>"message")
+      end.should raise_error(Mogli::Client::OAuthException, err_msg)
+    end
+
     it "raises specific exception if Facebook-imposed posting limit exceeded for feed" do
       error_message = "Feed action request limit reached"
       Mogli::Client.should_receive(:post).and_return({"error"=>{"type"=>"OAuthException","message"=>error_message}})
@@ -360,5 +372,4 @@ describe Mogli::Client do
       end
     end
   end
-
 end
