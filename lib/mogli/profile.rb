@@ -31,6 +31,11 @@ module Mogli
     def small_image_url
       "#{image_url}?type=small"
     end
+    
+    # 64.64 pixel image url
+    def normal_image_url
+      "#{image_url}?type=normal"
+    end
 
     # About 200 pixels wide, variable height image url
     def large_image_url
