@@ -43,6 +43,9 @@ module Mogli
     # application. the list should be kept in sync with
     # http://developers.facebook.com/docs/authentication/permissions
     ALL_EXTENDED_PERMISSIONS = [
+      # timeline
+      :publish_actions,
+
       # publishing permissions
       :publish_stream,
       :create_event,
