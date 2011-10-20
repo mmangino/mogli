@@ -212,7 +212,7 @@ module Mogli
     end
 
     def raise_error_if_necessary(data)
-      raise HTTPException if data.respond_to?(:code) and data.code != 200
+      raise HTTPException if data.respond_to?(:code) and data.code != 200 and data.code != 400
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
           self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
