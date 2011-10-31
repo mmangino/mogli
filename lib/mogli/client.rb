@@ -161,6 +161,11 @@ module Mogli
     def map_data(data,klass=nil)
       raise_error_if_necessary(data)
       hash_or_array = extract_hash_or_array(data,klass)
+      if hash_or_array.is_a?(Array) && hash_or_array.size == 2 && hash_or_array[1].is_a?(Hash) && hash_or_array[1]['body']
+          # responses from batch queries are buried inside a
+          # completely different data structure
+          hash_or_array = JSON.parse(hash_or_array[1]['body'].first).values
+      end
       hash_or_array = map_to_class(hash_or_array,klass) if klass
       hash_or_array
     end
