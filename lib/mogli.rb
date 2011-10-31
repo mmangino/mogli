@@ -1,4 +1,5 @@
 module Mogli
+  VERSION='0.3.5'
 end
 
 require "httparty"
@@ -20,6 +21,7 @@ require "mogli/comment"
 require "mogli/domain"
 require "mogli/education"
 require "mogli/event"
+require "mogli/friendlist"
 require "mogli/group"
 require "mogli/insight"
 require "mogli/insight_value"
@@ -31,6 +33,7 @@ require "mogli/music"
 require "mogli/note"
 require "mogli/page"
 require "mogli/photo"
+require "mogli/place"
 require "mogli/post"
 require "mogli/status"
 require "mogli/television"
@@ -41,3 +44,4 @@ require "mogli/test_user"
 require "mogli/client"
 require "mogli/app_client"
 require "mogli/fql_multiquery"
+require "mogli/permissions"
