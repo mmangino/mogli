@@ -84,6 +84,7 @@ module Mogli
       :xmpp_login,
       :ads_management,
       :user_checkins,
+      :friends_likes,
 
       # page permissions
       :manage_pages
