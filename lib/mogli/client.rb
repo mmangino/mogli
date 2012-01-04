@@ -7,7 +7,7 @@ module Mogli
     attr_reader :default_params
     attr_reader :expiration
 
-    include HTTParty
+    include HTTMultiParty
     include Mogli::Client::Event
     include Mogli::Client::User
 
@@ -212,7 +212,7 @@ module Mogli
     end
 
     def raise_error_if_necessary(data)
-      raise HTTPException.new("data=>#{data.inspect}") if data.respond_to?(:code) and !(400..499).include?(data.code) and data.code != 200
+      raise HTTPException.new("data=>#{data.inspect}") if data.respond_to?(:code) and not (400..499).include?(data.code) and data.code != 200
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
           self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
