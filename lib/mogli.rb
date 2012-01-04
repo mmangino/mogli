@@ -2,7 +2,7 @@ module Mogli
 end
 
 require "httparty"
-
+require "httmultiparty"
 
 require "mogli/authenticator"
 require "mogli/model"
@@ -17,6 +17,7 @@ require "mogli/app_request"
 require "mogli/book"
 require "mogli/checkin"
 require "mogli/comment"
+require "mogli/domain"
 require "mogli/education"
 require "mogli/event"
 require "mogli/group"

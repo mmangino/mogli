@@ -5,7 +5,7 @@ module Mogli
     define_properties :username, :first_name, :last_name, :link, :about, :birthday, :gender,
           :email, :website, :timezone, :updated_time, :verified, :political, :bio,
           :relationship_status, :locale, :religion, :quotes, :third_party_id,
-          :inspirational_people, :sports, :with, :middle_name
+          :inspirational_people, :sports, :with, :middle_name, :category
 
     def self.recognize?(hash)
       !hash.has_key?("category")
@@ -43,6 +43,9 @@ module Mogli
     # application. the list should be kept in sync with
     # http://developers.facebook.com/docs/authentication/permissions
     ALL_EXTENDED_PERMISSIONS = [
+      # timeline
+      :publish_actions,
+
       # publishing permissions
       :publish_stream,
       :create_event,
@@ -81,6 +84,7 @@ module Mogli
       :xmpp_login,
       :ads_management,
       :user_checkins,
+      :friends_likes,
 
       # page permissions
       :manage_pages
@@ -112,7 +116,7 @@ module Mogli
             "FROM permissions " +
             "WHERE uid = #{self.id}"
       @extended_permissions = {}
-      perms_query_result = client.fql_query(fql).parsed_response.first
+      perms_query_result = client.fql_query(fql).first
       ALL_EXTENDED_PERMISSIONS.each do |perm|
         @extended_permissions[perm] = (perms_query_result[perm.to_s] == 1)
       end
