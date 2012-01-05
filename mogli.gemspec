@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'mogli'
-  s.version = '0.0.36.1.copious'
+  s.version = '0.0.36'
   s.summary = 'Open Graph Library for Ruby'
   s.description = 'Simple library for accessing the Facebook Open Graph API'
   s.files = Dir['lib/**/*.rb']
@@ -16,5 +16,4 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency 'json'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
-  s.add_development_dependency 'stickler', [">= 2.0"]
 end
