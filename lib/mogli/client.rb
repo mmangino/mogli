@@ -73,7 +73,7 @@ module Mogli
     def self.raise_error_by_type_and_message(type, message)
       if type == 'OAuthException' && message =~ /Feed action request limit reached/
         raise FeedActionRequestLimitExceeded.new(message)
-      elsif type == 'OAuthException' && message =~ /The session has been invalidated because the user has changed the password/
+      elsif type == 'OAuthException' && (message =~ /The session has been invalidated because the user has changed the password/ || message =~ /Session does not match current stored session/)
         raise SessionInvalidatedDueToPasswordChange.new(message)
       elsif Mogli::Client.const_defined?(type)
         raise Mogli::Client.const_get(type).new(message)
@@ -212,12 +212,12 @@ module Mogli
     end
 
     def raise_error_if_necessary(data)
+      raise HTTPException.new("data=>#{data.inspect}") if data.respond_to?(:code) and not (400..499).include?(data.code) and data.code != 200
       if data.kind_of?(Hash)
         if data.keys.size == 1 and data["error"]
           self.class.raise_error_by_type_and_message(data["error"]["type"], data["error"]["message"])
         end
       end
-      raise HTTPException if data.respond_to?(:code) and data.code != 200 and data.code != 400
     end
 
     def fields_to_serialize

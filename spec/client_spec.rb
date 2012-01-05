@@ -136,14 +136,13 @@ describe Mogli::Client do
         result = client.post("1/feed","Post",:message=>"message")
       end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
     end
-    
+
     it "parses http response errors" do
       Mogli::Client.should_receive(:post).and_return(mock("httpresponse",:code=>500))
       client = Mogli::Client.new("1234")
       lambda do
         result = client.post("1/feed","Post",:message=>"message")
       end.should raise_error(Mogli::Client::HTTPException)
-      
     end
 
     it "creates objects of the returned type" do
@@ -152,13 +151,37 @@ describe Mogli::Client do
       result = client.post("1/feed","Post",:message=>"message")
       result.should == Mogli::Post.new(:id=>123434)
     end
-    
+
     it "creates object in a way that ignore invalid properties" do
       Mogli::Client.stub!(:post).and_return({:id=>123434,:completely_invalid_property=>1})
       client = Mogli::Client.new("1234")
       lambda do
         result = client.post("1/feed","Post",:message=>"message")
       end.should_not raise_error
+    end
+
+    it "parses an authentication failure due to invalid session or password change" do
+      err_type="OAuthException"
+      err_msg ="Error validating access token: Session does not match current stored session. This may be because the user changed the password since the time the session was created or Facebook has changed the session for security reasons."
+      response={"error"=>{"type"=>err_type,"message"=>err_msg}}
+      mock_response = mock("response",:parsed_response=>response,:code=>400,:kind_of? => true,:keys => ["error"],:[] => response["error"])
+      Mogli::Client.should_receive(:post).and_return(mock_response)
+      client = Mogli::Client.new("1234")
+      lambda do
+        result = client.post("1/feed","Post",:message=>"message")
+      end.should raise_error(Mogli::Client::SessionInvalidatedDueToPasswordChange, err_msg)
+    end
+
+    it "parses a failure due to user permissions" do
+      err_type="OAuthException"
+      err_msg ="(#210) User not visible"
+      response={"error"=>{"type"=>err_type,"message"=>err_msg}}
+      mock_response = mock("response",:parsed_response=>response,:code=>403,:kind_of? => true,:keys => ["error"],:[] => response["error"])
+      Mogli::Client.should_receive(:post).and_return(mock_response)
+      client = Mogli::Client.new("1234")
+      lambda do
+        result = client.post("1/feed","Post",:message=>"message")
+      end.should raise_error(Mogli::Client::OAuthException, err_msg)
     end
 
     it "raises specific exception if Facebook-imposed posting limit exceeded for feed" do
@@ -251,7 +274,6 @@ describe Mogli::Client do
       client.map_to_class(false,Mogli::User).should be_false
     end
     
-
     it "returns the array if no class is specified and there is only a data parameter" do
       client.map_data({"data"=>[user_data,user_data]}).should be_kind_of(Array)
     end
@@ -350,5 +372,4 @@ describe Mogli::Client do
       end
     end
   end
-
 end
