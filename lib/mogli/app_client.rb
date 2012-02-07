@@ -32,9 +32,5 @@ module Mogli
     def post(path, klass, query)
       super("#{application_id}/#{path}", klass, query)
     end
-    
-    def get_and_map(path, klass, query)
-      super("#{application_id}/#{path}", klass, query)
-    end
   end
 end
