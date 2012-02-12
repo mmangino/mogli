@@ -34,6 +34,8 @@ module Mogli
     has_association :accounts, "Page"
     has_association :apprequests, "AppRequest"
 
+    has_association :events, "Event"
+
     attr_reader :extended_permissions
 
     # raised when asked to check for a permission that mogli doesn't know about
