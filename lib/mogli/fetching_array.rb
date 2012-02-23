@@ -1,6 +1,6 @@
 module Mogli
   class FetchingArray < Array
-    attr_accessor :next_url, :previous_url, :client, :classes
+    attr_accessor :next_url, :previous_url, :client, :classes, :total_count
 
     def fetch_next
       return [] if next_url.nil? || next_url.empty?

@@ -177,6 +177,7 @@ module Mogli
       f.concat(hash["data"])
       f.client = self
       f.classes = Array(klass)
+      f.total_count = hash["count"]
       if paging=hash["paging"]
         f.next_url = URI.encode paging["next"] unless paging["next"].nil?
         f.previous_url = URI.encode paging["previous"] unless paging["previous"].nil?
