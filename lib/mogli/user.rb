@@ -4,7 +4,7 @@ module Mogli
 
     define_properties :username, :first_name, :last_name, :link, :about, :birthday, :gender,
           :email, :website, :timezone, :updated_time, :verified, :political, :bio,
-          :relationship_status, :locale, :religion, :quotes, :third_party_id,
+          :interested_in, :relationship_status, :locale, :religion, :quotes, :third_party_id,
           :inspirational_people, :sports, :with, :middle_name, :category
 
     def self.recognize?(hash)
