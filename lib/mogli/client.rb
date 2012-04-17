@@ -167,7 +167,7 @@ module Mogli
     end
 
     def is_fetching_array?(hash)
-      return false unless hash.respond_to? :has_key
+      return false unless hash.respond_to? :has_key?
       hash.has_key?("data") and hash["data"].instance_of?(Array)
     end
 
