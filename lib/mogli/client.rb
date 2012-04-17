@@ -168,7 +168,7 @@ module Mogli
     end
 
     def is_fetching_array?(hash)
-      return false unless hash.respond_to? :has_key
+      return false unless hash.respond_to? :has_key?
       hash.has_key?("data") and hash["data"].instance_of?(Array)
     end
 
@@ -211,7 +211,10 @@ module Mogli
     end
 
     def determine_class(klass_or_klasses,data)
-      return constantize_string(data['type']) if data.key?('type') && klass_or_klasses == Mogli::Model
+      if data.responds_to?(:has_key?) && data.has_key('type') &&
+                                         klass_or_klasses == Mogli::Model
+        return constantize_string(data['type'])
+      end
       klasses = Array(klass_or_klasses).map { |k| constantize_string(k)}
       klasses.detect {|klass| klass.recognize?(data)} || klasses.first
     end
