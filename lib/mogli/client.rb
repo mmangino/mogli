@@ -159,6 +159,7 @@ module Mogli
     def extract_hash_or_array(hash_or_array,klass)
       hash_or_array = hash_or_array.parsed_response if hash_or_array.respond_to?(:parsed_response)
       return nil if hash_or_array == false
+      return []  if hash_or_array == {"count" => 0}
       return hash_or_array if hash_or_array.nil? or hash_or_array.kind_of?(Array)
       return extract_fetching_array(hash_or_array,klass) if is_fetching_array?(hash_or_array)
       # Facebook doesn't return numbers or booleans in an object or list
@@ -176,6 +177,7 @@ module Mogli
       f.concat(hash["data"])
       f.client = self
       f.classes = Array(klass)
+      f.total_count = hash["count"]
       if paging=hash["paging"]
         f.next_url = URI.encode paging["next"] unless paging["next"].nil?
         f.previous_url = URI.encode paging["previous"] unless paging["previous"].nil?
