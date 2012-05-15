@@ -211,7 +211,7 @@ module Mogli
     end
 
     def determine_class(klass_or_klasses,data)
-      if data.respond_to?(:has_key?) && data.has_key('type') &&
+      if data.respond_to?(:has_key?) && data.has_key?('type') &&
                                          klass_or_klasses == Mogli::Model
         return constantize_string(data['type'])
       end
