@@ -34,7 +34,7 @@ describe Mogli::User do
 
     it "finds a user's friends with optional fields" do
       mock_client.should_receive(:get_and_map).with(
-        "1/friends", "User", {:fields => [:birthday, :gender]}).and_return(
+        "1/friends", "User", {:fields => 'birthday,gender'}).and_return(
         [Mogli::User.new(:id=>2, :birthday=>'09/15', :gender => 'male')])
       friends = user_1.friends(:birthday, :gender)
       friends.size.should == 1
