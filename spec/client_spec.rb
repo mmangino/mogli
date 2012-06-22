@@ -121,6 +121,30 @@ describe Mogli::Client do
 
   end
 
+  describe "Extending" do
+    it "knows if it is an extended session" do
+      Mogli::Client.new("1234",(Time.now.to_i + 48*60*60)).should be_extended
+    end
+    it "knows if it is not an extended session" do
+      Mogli::Client.new("1234",(Time.now.to_i + 2*60*60)).should_not be_extended
+    end
+
+    it "can get an extended session" do
+      response = stub(:parsed_response=>"access_token=new_token&expires=#{30*60*60*24}",:code=>200)
+      client = Mogli::Client.new("auth_key",Time.now.to_i)
+      Mogli::Client.should_receive(:get).with("https://graph.facebook.com/oauth/access_token",
+        :query=>{
+          :client_id=>"12345",
+          :client_secret => "secret",
+          :grant_type => "fb_exchange_token",
+          :fb_exchange_token=>"auth_key"}).and_return(response)
+      new_client = client.exchange_access_token("12345","secret")
+      new_client.access_token.should == "new_token"
+      new_client.should be_extended
+
+    end
+  end
+
 
   describe "Making requests" do
     it "posts with the parameters in the body" do

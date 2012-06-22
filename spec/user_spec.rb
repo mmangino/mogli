@@ -44,13 +44,10 @@ describe Mogli::User do
   describe "checking extended permissions" do
     before :each do
       # construct a response that will avoid errors: we're just testing query
-      @dummy_response = 'dummy response'
-      @dummy_response.stub!(:parsed_response).and_return [{}]
+      @dummy_response = [{}]
 
       # this HTTParty parsed response is taken directly from an actual fql response
-      @valid_response = 'valid response'
-      @valid_response.stub!(:parsed_response).and_return [{"publish_stream"=>1, "create_event"=>0, "rsvp_event"=>0, "sms"=>0, "offline_access"=>1, "publish_checkins"=>0, "user_about_me"=>0, "user_activities"=>0, "user_birthday"=>0, "user_education_history"=>0, "user_events"=>0, "user_groups"=>0, "user_hometown"=>0, "user_interests"=>0, "user_likes"=>0, "user_location"=>0, "user_notes"=>0, "user_online_presence"=>0, "user_photo_video_tags"=>0, "user_photos"=>0, "user_relationships"=>0, "user_relationship_details"=>0, "user_religion_politics"=>0, "user_status"=>0, "user_videos"=>0, "user_website"=>0, "user_work_history"=>0, "email"=>1, "read_friendlists"=>0, "read_insights"=>0, "read_mailbox"=>0, "read_requests"=>0, "read_stream"=>0, "xmpp_login"=>0, "ads_management"=>0, "user_checkins"=>0, "manage_pages"=>0}]
-
+      @valid_response = [{"publish_stream"=>1, "create_event"=>0, "rsvp_event"=>0, "sms"=>0, "offline_access"=>1, "publish_checkins"=>0, "user_about_me"=>0, "user_activities"=>0, "user_birthday"=>0, "user_education_history"=>0, "user_events"=>0, "user_groups"=>0, "user_hometown"=>0, "user_interests"=>0, "user_likes"=>0, "user_location"=>0, "user_notes"=>0, "user_online_presence"=>0, "user_photo_video_tags"=>0, "user_photos"=>0, "user_relationships"=>0, "user_relationship_details"=>0, "user_religion_politics"=>0, "user_status"=>0, "user_videos"=>0, "user_website"=>0, "user_work_history"=>0, "email"=>1, "read_friendlists"=>0, "read_insights"=>0, "read_mailbox"=>0, "read_requests"=>0, "read_stream"=>0, "xmpp_login"=>0, "ads_management"=>0, "user_checkins"=>0, "manage_pages"=>0}]
       @request_regexp = /^SELECT ([\w,]*) FROM permissions WHERE uid = \d*$/
     end
 

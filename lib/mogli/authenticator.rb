@@ -20,6 +20,17 @@ module Mogli
       "https://graph.facebook.com/oauth/access_token?client_id=#{client_id}&redirect_uri=#{CGI.escape(callback_url) unless callback_url.nil? || callback_url.empty?}&client_secret=#{secret}&code=#{CGI.escape(code)}"
     end
 
+    def extend_access_token(oauth_token)
+      response = Mogli::Client.get("https://graph.facebook.com/oauth/access_token",
+        :query=>{
+          :client_id=>@client_id,
+          :client_secret => @secret,
+          :grant_type => "fb_exchange_token",
+          :fb_exchange_token=>oauth_token})
+      raise_exception_if_required(response)
+      Hash[response.parsed_response.split("&").map {|a| a.split("=")}]
+    end
+
     def get_access_token_for_session_key(session_keys)
       keystr = session_keys.is_a?(Array) ?
                  session_keys.join(',') : session_keys

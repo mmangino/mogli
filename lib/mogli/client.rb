@@ -111,6 +111,17 @@ module Mogli
       client
     end
 
+    def extended?
+      (expiration.to_i - Time.now.to_i) > 24*60*60
+
+    end
+
+    def exchange_access_token(client_id, secret)
+      authenticator = Mogli::Authenticator.new(client_id, secret, nil)
+      results = authenticator.extend_access_token(@access_token)
+      self.class.new(results["access_token"],Time.now.to_i+results["expires"].to_i)
+    end
+
     def post(path,klass,body_args)
       data = self.class.post(api_path(path),:body=>default_params.merge(body_args))
       map_data(data,klass)

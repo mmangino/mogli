@@ -34,7 +34,7 @@ module Mogli
     end
 
     def self.all(app_client)
-      app_client.get_and_map("accounts/test-users", self, {})
+      app_client.get_and_map("#{app_client.application_id}/accounts/test-users", self, {})
     end
 
     def to_s
