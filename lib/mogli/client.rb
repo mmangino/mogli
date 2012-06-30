@@ -27,7 +27,7 @@ module Mogli
     end
 
     def fql_path
-      "https://api.facebook.com/method/fql.query"
+      "https://graph.facebook.com/fql"
     end
 
     def fql_multiquery_path
@@ -137,9 +137,9 @@ module Mogli
     end
 
     def fql_query(query,klass=nil,format="json")
-      data = self.class.post(fql_path,:body=>default_params.merge({:query=>query,:format=>format}))
+      data = self.class.get(fql_path,:query=>default_params.merge({:q=>query,:format=>format}))
       return data unless format=="json"
-      map_data(data,klass)
+      map_data(data[:data],klass)
     end
 
     def fql_multiquery(queries)

@@ -205,31 +205,52 @@ describe Mogli::Client do
 
   describe "fql queries" do 
     it "defaults to json" do
-      Mogli::Client.should_receive(:post).with("https://api.facebook.com/method/fql.query",:body=>{:query=>"query",:format=>"json",:access_token=>"1234"})
+      Mogli::Client.should_receive(:get).with("https://graph.facebook.com/fql",:query=>{:q=>"query",:format=>"json",:access_token=>"1234"}).and_return({:data=>[]})
       client = Mogli::Client.new("1234")
       client.fql_query("query")
     end
 
     it "supports xml" do 
-      Mogli::Client.should_receive(:post).with("https://api.facebook.com/method/fql.query",:body=>{:query=>"query",:format=>"xml",:access_token=>"1234"})
+      Mogli::Client.should_receive(:get).with("https://graph.facebook.com/fql",:query=>{:q=>"query",:format=>"xml",:access_token=>"1234"}).and_return({:data=>[]})
       client = Mogli::Client.new("1234")
       client.fql_query("query",nil,"xml")  
     end
 
     it "creates objects if given a class" do
-      Mogli::Client.should_receive(:post).and_return({"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
+      Mogli::Client.should_receive(:get).and_return({:data=>{"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" }})
       client = Mogli::Client.new("1234")
       client.fql_query("query","user").should be_an_instance_of(Mogli::User)
     end
 
+    it "Maps the fields if necessary" do
+      Mogli::Client.should_receive(:get).and_return({:data=>
+     [
+      {
+         :eid=> 182880348415052,
+         :name=> "Eeyores 48th Birthday Party"
+      },
+      {
+         :eid=> 172962332756022,
+         :name=> "Cake Walk - Featuring the Artwork of Emily Pelton"
+      }
+   ]
+})
+      client = Mogli::Client.new("1234")
+      events = client.fql_query("query","event")
+      events.first.should be_an_instance_of(Mogli::Event)
+      events.first.id.should == 182880348415052
+
+    end
+
+
     it "returns a hash if no class is given" do
-      Mogli::Client.should_receive(:post).and_return({"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
+      Mogli::Client.should_receive(:get).and_return(:data=>{"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
       client = Mogli::Client.new("1234")
       client.fql_query("query").should be_an_instance_of(Hash)
     end
 
     it "doesn't create objects if the format is xml" do 
-      Mogli::Client.should_receive(:post).and_return({"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
+      Mogli::Client.should_receive(:get).and_return(:data=>{"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" })
       client = Mogli::Client.new("1234")
       client.fql_query("query","user","xml").should be_an_instance_of(Hash)    
     end

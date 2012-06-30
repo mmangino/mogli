@@ -20,9 +20,10 @@ module Mogli
       @_values = {}
       self.client=client
       hash.each do |k,v|
-        self.send("#{k}=",v)
+        self.send("#{self.class.fql_mapping[k]||k}=",v)
       end
     end
+
 
     def post_params
       post_params = {}
@@ -54,6 +55,12 @@ module Mogli
       other.extend(ClassMethods)
     end
 
+    def self.fql_mapping(hash=nil)
+      if hash
+        @fql_mapping = hash
+      end
+      @fql_mapping || {}
+    end
     def method_missing(method, *args)
       method_as_s = method.to_s
       if method_as_s.to_s[-1].chr == "="

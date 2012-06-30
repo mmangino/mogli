@@ -12,5 +12,7 @@ module Mogli
     has_association :attending, "User"
     has_association :declined, "User"
     has_association :feed, "Post"
+
+    fql_mapping :eid=>:id
   end
 end
