@@ -137,9 +137,9 @@ module Mogli
     end
 
     def fql_query(query,klass=nil,format="json")
-      data = self.class.get(fql_path,:query=>default_params.merge({:q=>query,:format=>format}))
+      data = self.class.get(fql_path,:query=>default_params.merge({:q=>query,:format=>format})).parsed_response
       return data unless format=="json"
-      map_data(data[:data],klass)
+      map_data(data["data"],klass)
     end
 
     def fql_multiquery(queries)
