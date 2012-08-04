@@ -1,6 +1,6 @@
 module Mogli
   class Checkin < Model
-    define_properties :id,:message, :created_time
+    define_properties :id,:message, :created_time, :likes, :comments
     hash_populating_accessor :from, "User"
     hash_populating_accessor :tags, "User"
     hash_populating_accessor :place, "Page"
