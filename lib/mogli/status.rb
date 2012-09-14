@@ -5,5 +5,6 @@ module Mogli
     hash_populating_accessor :from, "User", "Page"
 
     has_association :comments, "Comment"
+    has_association :place, "Place"
   end
 end
