@@ -6,6 +6,7 @@ class TestModel < Mogli::Model
   has_association :comments, "Comment"
 
   hash_populating_accessor :from, "User"
+  hash_populating_accessor_with_default_field :location,:street, "Location"
   hash_populating_accessor :activities, "Activity"
   hash_populating_accessor :actions, "Action"
 end
@@ -52,6 +53,11 @@ describe Mogli::Model do
     model.comments.size.should == 2
     model.comments.first.id.should == 1
     model.comments.last.message.should == "second"
+  end
+
+  it "Can handle defaults" do
+    model = TestModel.new("id"=>1, :location=>"address")
+    model.location.street.should == "address"
   end
 
   it "only fetches activities once" do
