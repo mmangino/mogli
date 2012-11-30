@@ -3,7 +3,7 @@ module Mogli
   class Place < Model
     
     define_properties :id, :name, :category, :username, :can_post, :phone, :website, :checkins, :link, :public_transit, :likes, :picture
-    hash_populating_accessor :location, "Address"
+    hash_populating_accessor_with_defaut_field :location, "street", "Address"
     hash_populating_accessor :restaurant_services, "RestaurantServices"
     hash_populating_accessor :restaurant_specialties, "RestaurantSpecialties"
     hash_populating_accessor :parking, "Parking"

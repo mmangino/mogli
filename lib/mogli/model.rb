@@ -102,7 +102,20 @@ module Mogli
 
     def self.hash_populating_accessor(method_name,*klass)
       define_method "#{method_name}=" do |hash|
-        instance_variable_set("@#{method_name}",hash.is_a?(String)?hash:client.map_data(hash,klass))
+        instance_variable_set("@#{method_name}",client.map_data(hash,klass))
+      end
+      define_method "#{method_name}" do
+        instance_variable_get "@#{method_name}"
+      end
+
+      add_creation_method(method_name,klass)
+
+    end
+
+    def self.hash_populating_accessor_with_default_field(method_name,default_field,*klass)
+      define_method "#{method_name}=" do |hash|
+        hash={default_field:hash} if hash.is_a?(String)
+        instance_variable_set("@#{method_name}",client.map_data(hash,klass))
       end
       define_method "#{method_name}" do
         instance_variable_get "@#{method_name}"
