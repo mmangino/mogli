@@ -109,12 +109,11 @@ module Mogli
       end
 
       add_creation_method(method_name,klass)
-
     end
 
     def self.hash_populating_accessor_with_default_field(method_name,default_field,*klass)
       define_method "#{method_name}=" do |hash|
-        hash={default_field:hash} if hash.is_a?(String)
+        hash={default_field=>hash} if hash.is_a?(String)
         instance_variable_set("@#{method_name}",client.map_data(hash,klass))
       end
       define_method "#{method_name}" do
@@ -122,7 +121,6 @@ module Mogli
       end
 
       add_creation_method(method_name,klass)
-
     end
 
     def self.add_creation_method(name,klass)
