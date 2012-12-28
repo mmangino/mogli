@@ -112,6 +112,10 @@ module Mogli
     def revoke_permission
       client.delete("#{id}/permissions")
     end
+
+    def post_create(message)
+      client.post("#{id}/feed", nil, { :message => message })
+    end
     
     private
 
