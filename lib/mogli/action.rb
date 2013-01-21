@@ -1,6 +1,6 @@
 module Mogli
   class Action < Model
-    define_properties :name, :link
+    define_properties :name, :link, :profile
 
     # simple implementation of to_json, ignoring options like :only, :except,
     # :include, :methods because this is primarily intended for being submitted
