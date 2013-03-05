@@ -62,7 +62,7 @@ module Mogli
     end
 
     def raise_exception_if_required(response)
-      raise Mogli::Client::HTTPException if response.code != 200
+      raise Mogli::Client::HTTPException, response.body if response.code != 200
     end
 
   end
