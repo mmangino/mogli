@@ -39,7 +39,7 @@ module Mogli
     attr_reader :extended_permissions
 
     # raised when asked to check for a permission that mogli doesn't know about
-    class UnrecognizedExtendedPermissionException < Exception; end
+    class UnrecognizedExtendedPermissionException < StandardError; end
 
     # the entire list of extended permissions the user is able to grant the
     # application. the list should be kept in sync with
