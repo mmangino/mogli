@@ -30,7 +30,7 @@ module Mogli
       hash.has_key?("category")
     end
 
-    class MissingAccessToken < Exception
+    class MissingAccessToken < StandardError
     end
 
   end
