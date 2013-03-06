@@ -114,7 +114,7 @@ describe Mogli::Client do
       Mogli::Client.should_receive(:get).with("url").and_return(mock_response)
       begin 
         client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
-      rescue Exception => e
+      rescue => e
         e.message.should == "#{err_type}: #{err_msg}"
       end
     end

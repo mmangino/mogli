@@ -11,7 +11,7 @@ module Mogli
     include Mogli::Client::Event
     include Mogli::Client::User
 
-    class ClientException < Exception; end
+    class ClientException < StandardError; end
     class UnrecognizeableClassError < ClientException; end
     class QueryParseException < ClientException; end
     class OAuthAccessTokenException < ClientException; end
