@@ -95,7 +95,8 @@ describe Mogli::Authenticator do
   it "raises an error if not a 200" do
     response = mock('HTTParty::Response',
       :parsed_response => "access_token=123456|3SDdfgdfgv0bbEvYjBH5tJtl-dcBdsfgo",
-      :code => 500)
+      :code => 500,
+      :body => 'error')
 
     Mogli::Client.should_receive(:post).and_return(response)
     lambda do
