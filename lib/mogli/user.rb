@@ -33,6 +33,7 @@ module Mogli
     has_association :home, "Post"
     has_association :accounts, "Page"
     has_association :apprequests, "AppRequest"
+    has_association :friendlists, "FriendList"
 
     has_association :events, "Event"
 
