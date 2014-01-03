@@ -6,6 +6,16 @@ describe Mogli::Client do
   end
 
 
+  describe "default options" do
+    it "set 'accept' and 'content-type' headers" do
+      headers = Mogli::Client.default_options[:headers]
+
+      headers.should_not be_nil
+      headers.should include("Accept")
+      headers.should include("Content-Type")
+    end
+  end
+
   describe "creation" do
     it "allows creating with an access_token" do
       client = Mogli::Client.new("myaccesstoken")
@@ -89,7 +99,7 @@ describe Mogli::Client do
       client = Mogli::Client.new
       client.default_params.should == {}
     end
-    
+
 
     it "create get an unescaped access token from an authenticator and code" do
       Mogli::Client.should_receive(:get).with("url").and_return(mock("response",:parsed_response=>
@@ -112,7 +122,7 @@ describe Mogli::Client do
       response={"error"=>{"type"=>err_type,"message"=>err_msg}}
       mock_response = mock("response",:parsed_response=>response,:is_a? => true,:[] => response["error"])
       Mogli::Client.should_receive(:get).with("url").and_return(mock_response)
-      begin 
+      begin
         client = Mogli::Client.create_from_code_and_authenticator("code",mock("auth",:access_token_url=>"url"))
       rescue => e
         e.message.should == "#{err_type}: #{err_msg}"
@@ -160,14 +170,14 @@ describe Mogli::Client do
         result = client.post("1/feed","Post",:message=>"message")
       end.should raise_error(Mogli::Client::OAuthAccessTokenException, "An access token is required to request this resource.")
     end
-    
+
     it "parses http response errors" do
       Mogli::Client.should_receive(:post).and_return(mock("httpresponse",:code=>500))
       client = Mogli::Client.new("1234")
       lambda do
         result = client.post("1/feed","Post",:message=>"message")
       end.should raise_error(Mogli::Client::HTTPException)
-      
+
     end
 
     it "creates objects of the returned type" do
@@ -176,7 +186,7 @@ describe Mogli::Client do
       result = client.post("1/feed","Post",:message=>"message")
       result.should == Mogli::Post.new(:id=>123434)
     end
-    
+
     it "creates object in a way that ignore invalid properties" do
       Mogli::Client.stub!(:post).and_return({:id=>123434,:completely_invalid_property=>1})
       client = Mogli::Client.new("1234")
@@ -203,7 +213,7 @@ describe Mogli::Client do
   end
 
 
-  describe "fql queries" do 
+  describe "fql queries" do
 
     def wrap_in_parsed_response(data)
       stub(:parsed_response=>data)
@@ -219,10 +229,10 @@ describe Mogli::Client do
       client.fql_query("query")
     end
 
-    it "supports xml" do 
+    it "supports xml" do
       Mogli::Client.should_receive(:get).with("https://graph.facebook.com/fql",:query=>{:q=>"query",:format=>"xml",:access_token=>"1234"}).and_return(blank_response)
       client = Mogli::Client.new("1234")
-      client.fql_query("query",nil,"xml")  
+      client.fql_query("query",nil,"xml")
     end
 
     it "creates objects if given a class" do
@@ -258,27 +268,27 @@ describe Mogli::Client do
       client.fql_query("query").should be_an_instance_of(Hash)
     end
 
-    it "doesn't create objects if the format is xml" do 
+    it "doesn't create objects if the format is xml" do
       Mogli::Client.should_receive(:get).and_return(wrap_in_parsed_response("data"=>{"id"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino" }))
       client = Mogli::Client.new("1234")
-      client.fql_query("query","user","xml").should be_an_instance_of(Hash)    
+      client.fql_query("query","user","xml").should be_an_instance_of(Hash)
     end
   end
 
-  describe "fql multiqueries" do 
+  describe "fql multiqueries" do
     it "defaults to json" do
       fql = {"query1"=>"select uid from user"}
       Mogli::Client.should_receive(:post).with("https://api.facebook.com/method/fql.multiquery",:body=>{:format=>"json",:queries=>fql.to_json,:access_token=>"1234"})
       client = Mogli::Client.new("1234")
       client.fql_multiquery(fql)
     end
-    
+
     it "returns hash with query names and values matching desired classes" do
       Mogli::Client.should_receive(:post).and_return([
         {"name"=>"users", "fql_result_set"=>[{"uid"=>12451752, "first_name"=>"Mike", "last_name"=>"Mangino"}]},
         {"name"=>"comment_user","fql_result_set"=>[{"fromid"=>12451752}]}
       ])
-      
+
       f = Mogli::FqlMultiquery.new(Mogli::Client.new("1234"))
       f.add_named_query_for_class("comment_user", "SELECT fromid FROM comment WHERE post_id = 123343434", Mogli::Comment)
       f.add_named_query_for_class("users", "SELECT uid, first_name, last_name FROM user WHERE uid IN (SELECT fromid FROM #comment_user)", Mogli::User)
@@ -287,7 +297,7 @@ describe Mogli::Client do
       results["comment_user"].first.class.should == Mogli::Comment
     end
   end
-  
+
   describe "result mapping" do
 
     let :user_data do
@@ -297,14 +307,14 @@ describe Mogli::Client do
     it "returns the raw value with no class specified" do
       client.map_data(user_data).should be_an_instance_of(Hash)
     end
-    
+
     it "returns nil if we get a false response" do
       client.map_data(false,Mogli::User).should be_false
     end
     it "returns false if we get a false response" do
       client.map_to_class(false,Mogli::User).should be_false
     end
-    
+
 
     it "returns the array if no class is specified and there is only a data parameter" do
       client.map_data({"data"=>[user_data,user_data]}).should be_kind_of(Array)
