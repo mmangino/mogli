@@ -6,6 +6,16 @@ describe Mogli::Client do
   end
 
 
+  describe "default options" do
+    it "set 'accept' and 'content-type' headers" do
+      headers = Mogli::Client.default_options[:headers]
+
+      headers.should_not be_nil
+      headers.should include("Accept")
+      headers.should include("Content-Type")
+    end
+  end
+
   describe "creation" do
     it "allows creating with an access_token" do
       client = Mogli::Client.new("myaccesstoken")
