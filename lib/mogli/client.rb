@@ -11,6 +11,8 @@ module Mogli
     include Mogli::Client::Event
     include Mogli::Client::User
 
+    headers 'Accept' => "*/*", 'Content-Type' => "*/*"
+
     class ClientException < StandardError; end
     class UnrecognizeableClassError < ClientException; end
     class QueryParseException < ClientException; end
