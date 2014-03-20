@@ -88,6 +88,9 @@ module Mogli
       :ads_management,
       :user_checkins,
       :friends_likes,
+      :friends_birthday,
+      :friends_location,
+      :friends_relationships,
 
       # page permissions
       :manage_pages
