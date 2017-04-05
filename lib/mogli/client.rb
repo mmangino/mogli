@@ -53,19 +53,14 @@ module Mogli
       if (response_is_error?(post_data))
         raise_client_exception(post_data)
       end
-      parts = post_data.split("&")
-      hash = {}
-      parts.each do |p| (k,v) = p.split("=")
-        hash[k]=CGI.unescape(v)
-      end
 
-      if hash["expires"]
-        expires = Time.now.to_i + hash["expires"].to_i
+      if post_data["expires"]
+        expires = Time.now.to_i + post_data["expires"].to_i
       else
         expires = nil
       end
 
-      new(hash["access_token"],expires)
+      new(post_data["access_token"],expires)
     end
 
     def self.raise_client_exception(post_data)
@@ -86,7 +81,7 @@ module Mogli
 
     def self.response_is_error?(post_data)
        post_data.kind_of?(Hash) and
-       !post_data["error"].empty?
+       !post_data["error"].nil?
     end
 
     def self.create_from_session_key(session_key, client_id, secret)
