@@ -1,3 +1,7 @@
+DO NOT DELETE THIS REPO!!!
+It is currently being used by maloca as the original gem was causing 'This token has expired' errors when used by the Facebooker2 gem.
+Ketan Patel - 5th April 2017
+
 The first version of a Facebook Open Graph Library for Ruby. Require HTTParty to function.
 
 For documentation on the Open Graph Library, see: http://developers.facebook.com/docs/api
